@@ -1,0 +1,47 @@
+.w-btn{
+		display: inline-block;
+		line-height: 1;
+		white-space: nowrap;
+		cursor: pointer;
+		background: #fff;
+		border: 1px solid #dcdfe6;
+		color: #606266;
+		text-align: center;
+		box-sizing: border-box;
+		outline: none;
+		margin: 0;
+		transition: .1s;
+		font-weight: 500;
+		padding: 12rpx 20rpx;
+		font-size: 14px;
+		border-radius: 4px;
+}
+.w-btn-danger{
+	color: #fff !important;
+	background-color: #f56c6c !important;
+	border-color: #f56c6c !important;
+}
+.warning{
+	color: $sale-red !important;
+}
+.over{
+	color: #4ACA6D !important;
+}
+.container{
+	.save-btn{
+		height: 80rpx;
+		display: flex;
+		width: 100;
+		justify-content: center;
+		align-items: center;
+		line-height: 40px;
+		margin-top: 40rpx;
+		.save{
+			border-radius: 40rpx;
+			color: $white;
+			width: 90%;
+			background: $sale-red;
+			text-align: center;
+		}
+	}
+}

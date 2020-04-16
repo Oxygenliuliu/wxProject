@@ -1,0 +1,7 @@
+{
+  "navigationBarTitleText": "我的订单",
+  "usingComponents": {
+    "uni-order": "/components/uni-order/uniOrder",
+    "often-query": "/components/uni-often/uni-often"
+  }
+}
