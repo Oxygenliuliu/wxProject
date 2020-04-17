@@ -35,37 +35,36 @@
 											<view class="tag"  v-show="it.BILL_PLATFORM==1"><span class='iconfont iconapp'></span></view>
 											<view class="tag"  v-show="it.BILL_PLATFORM==2"><span class='iconfont iconshouji'></span></view>
 										</view>
-										<view class="display-more" @tap='displayMore(it.BILL_CODE)'>
+										<view class="display-more" @tap='displayMore(it.BILL_ID)'>
 											<view class="tag" :class="{'icondown':!it.isShow}"><span class='iconfont icontop'></span></view>
 										</view>
 									</view>
 								</view>
 							</view>
 							<view class="daily-conent" v-if="it.isShow"><!-- 明细详情 -->
-								<view class="daily-list" v-for="(item,index) in dailyInfo" :key="index">
+								<view class="daily-list" v-for="(item,index) in it.child" :key="index">
 									<view class="daily-listinfo">
 										<view class="daily-img">
 										</view>
 										<view class="daily-coninfo">
 											<view class="daily-coninfoone">
-												<view class="daily-conleft w-text-over">材料：海报海报海报海报海报海报海报</view> <view class="daily-listprice w-text-over">{{400|priceFormat(2,'￥',true)}}</view>
+												<view class="daily-conleft w-text-over">材料：{{item.BILLDETAIL_GOODSNAME||'空'}}</view> <view class="daily-listprice w-text-over">{{item.BILLDETAIL_PRICE|priceFormat(2,'￥',true)}}</view>
 											</view>
 											<view class="daily-coninfoone">
-												<view class="daily-conleft">尺寸：5*6</view> <view class="daily-conright">数量：10</view>
+												<view class="daily-conleft">尺寸：{{item.BILLDETAIL_W||0}}*{{item.BILLDETAIL_H||0}}</view> <view class="daily-conright">数量：{{item.BILLDETAIL_TOTALQTY||0}}</view>
 											</view>
 										</view>
 									</view>
 									<view class="daily-head">
-										<view class="daily-time w-text-over">后期工艺: 工艺一工艺二</view>
-										<view class="daily-contacts w-text-over warning">明细总价: {{100|priceFormat(2,'￥',true)}}</view>
+										<!-- <view class="daily-time w-text-over">后期工艺: 工艺一工艺二</view> -->
+										<view class="daily-contacts w-text-over warning">明细总价: {{item.BILLDETAIL_TOTALMONEY|priceFormat(2,'￥',true)}}</view>
 									</view>
 								</view>
 							</view>
 						</view>
 					</scroll-view>
 				</view>
-				<view class="not-data" v-show="dailyList.length == 0">
-					没有数据</view>
+				<view class="not-data" v-show="dailyList.length == 0">没有数据</view>
 			</swiper-item>
 		</swiper>
 	<view class="recfooter" :class="{'t-recfooter':(tabIndex == 2||pageSettlement == 0)}">
@@ -106,6 +105,12 @@
 				default: function(){
 					return {}
 				}
+			},
+			dbname:{
+				type: String,
+				default: function(){
+					return ''
+				}
 			}
 		},
 		data() {
@@ -116,11 +121,6 @@
 					{id: 2,name: '未结清',isTrue: false},
 				],
 				dailyList:[],//页面订单显示数组
-				dailyInfo: [
-					{},
-					{},
-					{},
-				],
 				tabIndex: 0,//swiper下标
 				orderList:{allData: [],clear: [],notClear: []},//订单页面需要三个数组存储数据全部、未结清、已结清防止已有数据再次请求
 				newsList:[],//swiper分多少个页面页占位数组
@@ -136,9 +136,10 @@
 		},
 		methods: {
 			displayMore(orderId){ //展开更多
-				this.dailyList.some(i=>{
-					if(i.BILL_CODE == orderId){
+				this.dailyList.some((i,j)=>{
+					if(i.BILL_ID == orderId){
 						i.isShow = !i.isShow;
+						this.$set(this.dailyList,j,i);
 						return true;
 					}
 				})
@@ -162,17 +163,17 @@
 				})
 			},
 			setDisplayData(data){
-				let arr = this.returnAppendCheckBox(data);
-				this.dailyList = this.dailyList.concat(arr);
+				let arr3 = this.contactDoubleArr(data);
+				this.dailyList = arr3;
 				switch (this.tabIndex){
 					case 0://全部
-						this.orderList.allData = this.dailyList.concat(data);
+						this.orderList.allData = arr3;
 						break;
 					case 1://未结清
-						this.orderList.clear = this.dailyList.concat(data);
+						this.orderList.clear = arr3;
 						break;
 					case 2:// 已结清
-						this.orderList.notClear = this.dailyList.concat(data);
+						this.orderList.notClear = arr3;
 						break;
 					default:
 						break;
@@ -233,10 +234,13 @@
 				this.pageLarge = {nowIndexA: 0,nowIndexB: 0,nowIndexC: 0};//现在处于页数
 				this.pageMaxSize = {pageA: -1,pageB: -1,pageC: -1};//最大页数
 				this.nowInfo = {nowIndex: 0,maxSize: 0};//传入接口页面参数
-				if(this.pageSettlement)this.params.STATUS = '2'//收款页面只展示未结清单子
+				if(this.pageSettlement == 0)this.params.MODE = '2'//收款页面只展示未结清单子
+				for(let key in this.params){ //遍历重置筛选条件
+					this.params[key] = this.fparams[key]
+				}
 				this.changeType(0);//重置swiper位置
 				this.tabIndex = 0;//重置swiper位置
-				this.dailyList = []
+				this.dailyList = [];
 				this.orderList.allData = this.orderList.clear = this.orderList.notClear = [];//重置各个数组
 			},
 			changeType(id){ //更换订单类别
@@ -258,10 +262,10 @@
 			},
 			ontabchange(e) {//滑动切换类别
 				let index = parseInt(e.target.current || e.detail.current);
-				this.tabIndex = index
+				this.tabIndex = index;
+				this.params.MODE = index;
 				this.setPageInfo();
 				this.changeType(index);
-				this.params.STATUS = index;
 				this.setOrderList(index,this.params);
 			},
 			changeScreen(data){//改变筛选条件 父组件调用
@@ -289,11 +293,11 @@
 				uni.showLoading({title: '加载中...'})
 				return new Promise((resolv,reject)=>{
 					uni.request({
-						url: 'https://cloud.fydlsoft.com/transit_server?interface_add=http://111.67.204.75:7798/cs/query',
+						url: 'http://127.0.0.1:7798' + '/public/query',
 						method: 'GET',
 						data:{
-							token: '3E009AA849C840D187E53EF71A67CDC4',
-							params: encodeURIComponent(JSON.stringify(params)),
+							dbname: this.dbname,
+							params:params
 						},
 						success:res=>{
 							if(res.data.status == 0){
@@ -303,19 +307,103 @@
 								reject(uni.showToast({title: '异常',icon: 'none'}))
 							}
 						},
-						fail:(res)=> {
+						fail:()=> {
 							uni.showToast({title: '网络异常',icon: 'none'})
 						},
-						complete:(res)=> {
+						complete:()=> {
 							uni.hideLoading()
 						}
 					})
 				})
+				// return new Promise((resolv,reject)=>{
+				// 	uni.request({
+				// 		url: 'https://cloud.fydlsoft.com/transit_server?interface_add=http://111.67.204.75:7798/cs/query',
+				// 		method: 'GET',
+				// 		data:{
+				// 			token: 'B9D867D348DE4BA282DB7FA271947C9E',
+				// 			params: encodeURIComponent(JSON.stringify(params)),
+				// 		},
+				// 		success:res=>{
+				// 			if(res.data.status == 0){
+				// 				this.setMaxPage(res.data.total)
+				// 				resolv(res.data.data)
+				// 			}else{
+				// 				reject(uni.showToast({title: '异常',icon: 'none'}))
+				// 			}
+				// 		},
+				// 		fail:(res)=> {
+				// 			uni.showToast({title: '网络异常',icon: 'none'})
+				// 		},
+				// 		complete:(res)=> {
+				// 			uni.hideLoading()
+				// 		}
+				// 	})
+				// })
 			},
 			async queryData(params = this.params){ //查询数据
-				this.dailyList = await this.wrquest(params);
+				let data = await this.wrquest(params);
+				this.dailyList = this.createDoubleArr(data);
 				this.orderList.allData = this.dailyList;
 				this.appendCheckBox();
+			},
+			contactDoubleArr(arr){//已有分组的情况下 下拉刷新出来的新数据处理
+				let arr1 = this.createDoubleArr(arr); //新增的二维数组
+				let num1 = 0,num2 = 0,num3 = 0;
+				arr1.forEach(i=>{
+					num1+= i.child.length
+				})
+				let arr2 = this.dailyList;//原来的二维数组
+				arr2.forEach(i=>{
+					num2+= i.child.length
+				})
+				arr1.forEach((i,j)=>{
+					let flag = arr2.some((k,l)=>{
+						if(i.BILL_ID == k.BILL_ID){//新增数据在原有数组中存在
+							k.child = k.child.concat(i.child);
+							return true;
+						}
+					})
+					if(!flag){
+						arr2.push(i);
+					}
+				})
+				arr2.forEach(i=>{
+					num3+= i.child.length
+				})
+				return arr2;
+			},
+			createDoubleArr(arr){
+				let arr1 = []
+				arr.filter(i=>{
+					let obj = {};
+					obj['BILL_CODE'] = i.BILL_CODE;
+					obj['BILL_DATE_STR'] = i.BILL_DATE_STR;
+					obj['BILL_ID'] = i.BILL_ID;
+					obj['BILL_LEFTMONEY'] = i.BILL_LEFTMONEY;
+					obj['child'] = [];
+					arr1.push(obj);
+				})
+				arr1 = arr1.filter((i,j,self)=>{
+					return self.findIndex(el=>el.BILL_CODE == i.BILL_CODE)===j
+				})
+				
+				arr1.forEach((i,j)=>{
+					arr.forEach((k,l)=>{
+						let flag = false;
+						let obj = {};
+						if(i.BILL_ID == k.BILL_ID){
+							flag = true;
+							obj['BILLDETAIL_GOODSNAME'] = k.BILLDETAIL_GOODSNAME;
+							obj['BILLDETAIL_TOTALMONEY'] = k.BILLDETAIL_TOTALMONEY;
+							obj['BILLDETAIL_W'] = k.BILLDETAIL_W;
+							obj['BILLDETAIL_PRICE'] = k.BILLDETAIL_PRICE;
+							obj['BILLDETAIL_H'] = k.BILLDETAIL_H;
+							obj['BILLDETAIL_TOTALQTY'] = k.BILLDETAIL_TOTALQTY;
+						}
+						if(flag)i.child.push(obj)
+					})
+				})
+			return arr1;
 			},
 			returnAppendCheckBox(arr){ //分页的时候添加可控属性
 				arr.forEach((i,j)=>{
@@ -336,6 +424,7 @@
 				this.queryData();
 			},
 			jqueyForCustomer(obj){
+				console.log(this.dbname)
 				this.pageSettlement = obj.type;
 				if(obj.type == 0){
 					[1].forEach(() => {
@@ -414,13 +503,14 @@
 			async setOrderList(type = -1,params){//设置类别数据
 				switch (type){
 					case -1:
-						this.orderList.allData = await this.wrquest(params);
+						let data = await this.wrquest(params);
+						this.orderList.allData = this.createDoubleArr(data);
 						this.dailyList = this.orderList.allData;
-						this.appendCheckBox()
 						break;
 					case 0:
 					if(this.orderList.allData.length == 0){
-						this.orderList.allData = await this.wrquest(params);
+						let data = await this.wrquest(params);
+						this.orderList.allData = this.createDoubleArr(data);
 						this.dailyList = this.orderList.allData;
 					}else{
 						this.dailyList = this.orderList.allData;
@@ -428,7 +518,8 @@
 						break;
 					case 1:
 					if(this.orderList.clear.length == 0){
-						this.orderList.clear = await this.wrquest(params);
+						let data = await this.wrquest(params);
+						this.orderList.clear = this.createDoubleArr(data);
 						this.dailyList = this.orderList.clear;
 					}else{
 						this.dailyList = this.orderList.clear;
@@ -436,7 +527,8 @@
 						break;
 						case 2:
 					if(this.orderList.notClear.length == 0){
-						this.orderList.notClear = await this.wrquest(params);
+						let data = await this.wrquest(params);
+						this.orderList.notClear = this.createDoubleArr(data);
 						this.dailyList = this.orderList.notClear;
 					}else{
 						this.dailyList = this.orderList.notClear;
@@ -445,7 +537,7 @@
 					default:
 						break;
 				}
-				this.appendCheckBox()
+				this.appendCheckBox();
 			},
 		},
 		created() {
@@ -456,7 +548,8 @@
 					return {}
 				},
 				get: function(){
-					return this.fparams
+					let obj = this.wpublic.deepClone(this.fparams);
+					return obj
 				}
 			},
 			num: {

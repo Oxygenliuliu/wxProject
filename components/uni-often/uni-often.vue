@@ -32,7 +32,7 @@
 							请选择日期:
 						</view>
 						<view class="cont-box martop">
-							<view class="time">
+							<view class="time" >
 								<view class="time-cont" @tap="toggleTab('dateTime')">
 									{{time.statrTime}}
 									<view class="line"></view>
@@ -88,6 +88,8 @@
 					<view class="has-choose">
 						<block v-for="(item,index) in chooseData" :key='index'>
 							<view v-if="Object.keys(item.times).length == 0" class="inline-block">
+								<span class='tag' v-if='item.id == 102'>{{nowTime}}
+								</span>
 								<span class='tag' :class="{'display-none': item.cont ==''}">{{item.cont}}
 								<i class='iconfont iconchacha' @tap='moveChoose(item.id)'></i>
 								</span>
@@ -188,6 +190,7 @@
 					{id: 104,name: '是否登账',cont: '',times: {},typeId: -1}
 				],
 				animationData:{},//动画对象
+				nowTime: '',
 			}
 		},
 		methods:{
@@ -307,6 +310,7 @@
 				timingFunction: 'ease',
 			})
 			this.animation = animation;
+			this.nowTime = (new Date().toLocaleString().substr(0,10)).replace(/\//g,'-');
 		}
 	}
 </script>

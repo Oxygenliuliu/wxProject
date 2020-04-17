@@ -7614,9 +7614,9 @@ module.exports = g;
 
 /***/ }),
 /* 4 */
-/*!********************************************************************************!*\
-  !*** C:/Users/Administrator/Documents/HBuilderProjects/fy_customer/pages.json ***!
-  \********************************************************************************/
+/*!******************************************************************************!*\
+  !*** C:/Users/Administrator/Documents/HBuilderProjects/wxProject/pages.json ***!
+  \******************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports) {
 
@@ -8520,9 +8520,9 @@ module.exports = {"_from":"@dcloudio/uni-stat@next","_id":"@dcloudio/uni-stat@2.
 
 /***/ }),
 /* 7 */
-/*!*************************************************************************************************!*\
-  !*** C:/Users/Administrator/Documents/HBuilderProjects/fy_customer/pages.json?{"type":"style"} ***!
-  \*************************************************************************************************/
+/*!***********************************************************************************************!*\
+  !*** C:/Users/Administrator/Documents/HBuilderProjects/wxProject/pages.json?{"type":"style"} ***!
+  \***********************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -8531,9 +8531,9 @@ Object.defineProperty(exports, "__esModule", { value: true });exports.default = 
 
 /***/ }),
 /* 8 */
-/*!************************************************************************************************!*\
-  !*** C:/Users/Administrator/Documents/HBuilderProjects/fy_customer/pages.json?{"type":"stat"} ***!
-  \************************************************************************************************/
+/*!**********************************************************************************************!*\
+  !*** C:/Users/Administrator/Documents/HBuilderProjects/wxProject/pages.json?{"type":"stat"} ***!
+  \**********************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -8675,9 +8675,9 @@ function normalizeComponent (
 
 /***/ }),
 /* 15 */
-/*!*****************************************************************************************!*\
-  !*** C:/Users/Administrator/Documents/HBuilderProjects/fy_customer/common/js/public.js ***!
-  \*****************************************************************************************/
+/*!***************************************************************************************!*\
+  !*** C:/Users/Administrator/Documents/HBuilderProjects/wxProject/common/js/public.js ***!
+  \***************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -8766,9 +8766,9 @@ var getRandomNumber = function getRandomNumber(obj) {
 
 /***/ }),
 /* 16 */
-/*!************************************************************************************!*\
-  !*** C:/Users/Administrator/Documents/HBuilderProjects/fy_customer/store/index.js ***!
-  \************************************************************************************/
+/*!**********************************************************************************!*\
+  !*** C:/Users/Administrator/Documents/HBuilderProjects/wxProject/store/index.js ***!
+  \**********************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -10598,9 +10598,9 @@ if (hadRuntime) {
 /* 32 */,
 /* 33 */,
 /* 34 */
-/*!**************************************************************************************!*\
-  !*** C:/Users/Administrator/Documents/HBuilderProjects/fy_customer/common/js/md5.js ***!
-  \**************************************************************************************/
+/*!************************************************************************************!*\
+  !*** C:/Users/Administrator/Documents/HBuilderProjects/wxProject/common/js/md5.js ***!
+  \************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -11678,9 +11678,9 @@ module.exports = __webpack_amd_options__;
 /* 50 */,
 /* 51 */,
 /* 52 */
-/*!*************************************************************************************************************************!*\
-  !*** C:/Users/Administrator/Documents/HBuilderProjects/fy_customer/components/customize/w-picker/city-data/province.js ***!
-  \*************************************************************************************************************************/
+/*!***********************************************************************************************************************!*\
+  !*** C:/Users/Administrator/Documents/HBuilderProjects/wxProject/components/customize/w-picker/city-data/province.js ***!
+  \***********************************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -11827,9 +11827,9 @@ provinceData;exports.default = _default;
 
 /***/ }),
 /* 53 */
-/*!*********************************************************************************************************************!*\
-  !*** C:/Users/Administrator/Documents/HBuilderProjects/fy_customer/components/customize/w-picker/city-data/city.js ***!
-  \*********************************************************************************************************************/
+/*!*******************************************************************************************************************!*\
+  !*** C:/Users/Administrator/Documents/HBuilderProjects/wxProject/components/customize/w-picker/city-data/city.js ***!
+  \*******************************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -13340,9 +13340,9 @@ cityData;exports.default = _default;
 
 /***/ }),
 /* 54 */
-/*!*********************************************************************************************************************!*\
-  !*** C:/Users/Administrator/Documents/HBuilderProjects/fy_customer/components/customize/w-picker/city-data/area.js ***!
-  \*********************************************************************************************************************/
+/*!*******************************************************************************************************************!*\
+  !*** C:/Users/Administrator/Documents/HBuilderProjects/wxProject/components/customize/w-picker/city-data/area.js ***!
+  \*******************************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -25892,9 +25892,9 @@ areaData;exports.default = _default;
 
 /***/ }),
 /* 55 */
-/*!***************************************************************************************************************!*\
-  !*** C:/Users/Administrator/Documents/HBuilderProjects/fy_customer/components/customize/w-picker/w-picker.js ***!
-  \***************************************************************************************************************/
+/*!*************************************************************************************************************!*\
+  !*** C:/Users/Administrator/Documents/HBuilderProjects/wxProject/components/customize/w-picker/w-picker.js ***!
+  \*************************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 

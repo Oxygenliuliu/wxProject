@@ -1,13 +1,13 @@
 <template>
 	<view class="container">
 		<view class="header" v-if="pageSettlement != -1">
-			<view class="title">客户:{{companyName}}</view>
+			<view class="title">客户:{{'张三'}}</view>
 		</view>
 		<view v-if="pageSettlement == -1">{{data}}</view>
 		<view v-if="pageSettlement != -1">
 			<often-query :items='topItems' @dataChange='childQuery' v-if="pageSettlement != 0"></often-query>
 		</view>
-		<uni-order @getCompanyName='getCompanyName' :orderId='orderId' :fparams='params' :scrollHeight="scrollHeight" ref='uniOrder' v-if="pageSettlement != -1"></uni-order>
+		<uni-order @getCompanyName='getCompanyName' :dbname='dbname' @changeScrollHeight='changeScrollHeight' :orderId='orderId' :fparams='params' :scrollHeight="scrollHeight" ref='uniOrder' v-if="pageSettlement != -1"></uni-order>
 	</view> 
 </template>
 <script>
@@ -41,7 +41,9 @@
 				data: '',
 				params: {},
 				pageSettlement: 0,//0收款 1兑账 2扫码
-				companyName: ''
+				companyName: '',
+				costScrollHeight:'',
+				dbname: ''
 			}
 		},
 		onLoad(options){
@@ -50,21 +52,20 @@
 				let index = q.indexOf('=');
 				let str = q.substr(index + 1,q.length);
 				let obj = JSON.parse(decodeURIComponent(str));
-				
 				if(typeof obj == 'object'){
 					this.companyName = obj.params.KEYWORDS || '未定义'
 					this.pageSettlement = obj.type;
-					this.params = {
-							QUERY_ID: 6,
-							BEGINDATE: obj.params.BEGINDATE || '1900-01-01',
-							ENDDATE: obj.params.ENDDATE || this.wpublic.getDay(1),//日期引用公共方法
-							KEYWORDS: obj.params.KEYWORDS || '',
-							ORDERID: obj.params.ORDERID || '',
-							BILLTYPE: obj.params.BILLTYPE || 1,
-							PAGE_SIZE: 8,
-							PAGE_INDEX: 0,
-							STATUS: obj.params.KEYWORDS || 0
-					},
+					this.dbname = obj.params.dbname || '演示账套';
+					this.params = {//搜索条件
+						QUERY_ID: 1,
+						BEGINDATE: obj.params.BEGINDATE || '1900-01-01',
+						ENDDATE: obj.params.ENDDATE || this.wpublic.getDay(1),//日期引用公共方法
+						PARTNER_ID: obj.params.PARTNER_ID || '',
+						BILL_ID: obj.params.ORDERID || '',
+						MODE: obj.params.KEYWORDS || 0,
+						PAGE_SIZE: 8,
+						PAGE_INDEX: 0,
+					}
 					this.$nextTick(function(){
 							this.$refs.uniOrder.jqueyForCustomer(obj);
 					})
@@ -73,18 +74,21 @@
 					this.data = '参数错误201'
 				}
 			}else{
-				 //let obj = {type: 2,params:{orderId:'',dbname: ''}}
-				// this.params = {
-				// 		QUERY_ID: 6,
-				// 		BEGINDATE: obj.params.BEGINDATE || '1900-01-01',
-				// 		ENDDATE: obj.params.ENDDATE || this.wpublic.getDay(1),//日期引用公共方法
-				// 		KEYWORDS: obj.params.KEYWORDS || '',
-				// 		ORDERID: obj.params.ORDERID || '',
-				// 		BILLTYPE: obj.params.BILLTYPE || 1,
-				// 		PAGE_SIZE: 8,
-				// 		PAGE_INDEX: 0,
-				// 		STATUS: obj.params.STATUS || 0
-				// },
+				//let obj = {type: 2,params:{ORDERID:'1836934'}}
+				
+				// let obj = {type: 2,params:{PARTNER_ID:'1757112'}}//客户:龙行天下
+				// this.pageSettlement = obj.type
+				// this.dbname = obj.params.dbname || '演示账套';
+				// this.params = {//搜索条件
+				// 	QUERY_ID: 1,
+				// 	BEGINDATE: obj.params.BEGINDATE || '1900-01-01',
+				// 	ENDDATE: obj.params.ENDDATE || this.wpublic.getDay(1),//日期引用公共方法
+				// 	PARTNER_ID: obj.params.PARTNER_ID || '',
+				// 	BILL_ID: obj.params.ORDERID || '',
+				// 	MODE: obj.params.KEYWORDS || 0,
+				// 	PAGE_SIZE: 8,
+				// 	PAGE_INDEX: 0,
+				// }
 				// this.$nextTick(function(){
 				// 		this.$refs.uniOrder.jqueyForCustomer(obj);
 				// })
@@ -97,24 +101,25 @@
 					/* 设置当前滚动容器的高，若非窗口的高度，请自行修改 */
 					// #ifdef APP-PLUS
 					if(this.pageSettlement != 0){//没有筛选条件
-						this.scrollHeight = res.windowHeight - 50  - res.statusBarHeight + 'px';
+						this.scrollHeight = res.windowHeight - 50 - 70  - res.statusBarHeight + 'px';
 					}else if(this.pageSettlement != 0&&this.pageSettlement != -1){
-						this.scrollHeight = res.windowHeight - 50 - 40 - 31 - res.statusBarHeight + 'px';
+						this.scrollHeight = res.windowHeight - 50 - 70 - 40 - 31 - res.statusBarHeight + 'px';
 					}
 					else{
-						this.scrollHeight = res.windowHeight - 50 - 31 - res.statusBarHeight + 'px';
+						this.scrollHeight = res.windowHeight - 50 - 70 - 31 - res.statusBarHeight + 'px';
 					}
 					// #endif
 					// #ifndef APP-PLUS
-					this.scrollHeight = res.windowHeight - 50 - 31 + 'px';
+					this.scrollHeight = res.windowHeight - 50 - 50 - 31 + 'px';
 					// #endif
 				}
 			});
+			this.costScrollHeight = this.scrollHeight;
 		},
 		methods: {
 			changeScrollHeight(obj){//更改滚动条长度
 				let num = this.scrollHeight.replace('px','');
-				this.scrollHeight = obj.type?parseInt(num) - obj.height + 'px':parseInt(num) + obj.height + 'px';
+				this.scrollHeight = obj.type?parseInt(num) - obj.height + 'px': this.costScrollHeight;
 			},
 			showDrawer(){ //侧栏展示
 				this.$refs.morequery.show()
@@ -180,12 +185,6 @@
 			clickScreen(){//点击查询
 				this.$refs.uniOrder.fuzzyQuery(this.searchData)
 			},
-			goWhere(){
-				let obj = {type: 1,orderId: 1835801,data:{date: '2015061030',status: 0}}
-				uni.navigateTo({
-					url: '../../pages/index/b?data' + JSON.stringify(obj)
-				})
-			}
 		},
 		async onPullDownRefresh() {
 			await this.$refs.uniOrder.pullRefresh();
@@ -199,6 +198,7 @@
 <style lang="scss" scoped>
 	@import "../../common/css/iconfont.css";
 	@import  "../../common/css/common.scss";
+	
 	.header{
 		display: flex;
 		justify-content: space-between;

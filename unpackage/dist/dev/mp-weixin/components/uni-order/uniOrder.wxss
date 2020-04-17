@@ -33,213 +33,213 @@
   url('//iconfont.ttf/?t=1585892234299') format('truetype'), 
   url('//iconfont.svg/?t=1585892234299#iconfont') format('svg'); /* iOS 4.1- */
 }
-.iconfont.data-v-5a0081c8 {
+.iconfont.data-v-74d48976 {
   font-family: "iconfont" !important;
   font-size: 16px;
   font-style: normal;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
-.iconyinhangka.data-v-5a0081c8:before {
+.iconyinhangka.data-v-74d48976:before {
   content: "\e617";
 }
-.iconxianjin.data-v-5a0081c8:before {
+.iconxianjin.data-v-74d48976:before {
   content: "\e62e";
 }
-.iconumidd17.data-v-5a0081c8:before {
+.iconumidd17.data-v-74d48976:before {
   content: "\e616";
 }
-.iconweixin.data-v-5a0081c8:before {
+.iconweixin.data-v-74d48976:before {
   content: "\e615";
 }
-.iconbiography.data-v-5a0081c8:before {
+.iconbiography.data-v-74d48976:before {
   content: "\e690";
 }
-.iconShare.data-v-5a0081c8:before {
+.iconShare.data-v-74d48976:before {
   content: "\e639";
 }
-.iconapp.data-v-5a0081c8:before {
+.iconapp.data-v-74d48976:before {
   content: "\e614";
 }
-.iconshouji.data-v-5a0081c8:before {
+.iconshouji.data-v-74d48976:before {
   content: "\e6c0";
 }
-.iconpc.data-v-5a0081c8:before {
+.iconpc.data-v-74d48976:before {
   content: "\e613";
 }
-.icongou.data-v-5a0081c8:before {
+.icongou.data-v-74d48976:before {
   content: "\e612";
 }
-.iconcontextdelete.data-v-5a0081c8:before {
+.iconcontextdelete.data-v-74d48976:before {
   content: "\e64a";
 }
-.icongengduo1.data-v-5a0081c8:before {
+.icongengduo1.data-v-74d48976:before {
   content: "\e610";
 }
-.iconbianji.data-v-5a0081c8:before {
+.iconbianji.data-v-74d48976:before {
   content: "\e61f";
 }
-.icontop.data-v-5a0081c8:before {
+.icontop.data-v-74d48976:before {
   content: "\e776";
 }
-.iconbottom.data-v-5a0081c8:before {
+.iconbottom.data-v-74d48976:before {
   content: "\e60f";
 }
-.iconlaba.data-v-5a0081c8:before {
+.iconlaba.data-v-74d48976:before {
   content: "\e666";
 }
-.iconfaduanxin.data-v-5a0081c8:before {
+.iconfaduanxin.data-v-74d48976:before {
   content: "\e60d";
 }
-.iconPhone.data-v-5a0081c8:before {
+.iconPhone.data-v-74d48976:before {
   content: "\e8c0";
 }
-.iconyou.data-v-5a0081c8:before {
+.iconyou.data-v-74d48976:before {
   content: "\e658";
 }
-.iconcash.data-v-5a0081c8:before {
+.iconcash.data-v-74d48976:before {
   content: "\e62a";
 }
-.iconbank.data-v-5a0081c8:before {
+.iconbank.data-v-74d48976:before {
   content: "\e735";
 }
-.icongengxin.data-v-5a0081c8:before {
+.icongengxin.data-v-74d48976:before {
   content: "\e611";
 }
-.iconzuo.data-v-5a0081c8:before {
+.iconzuo.data-v-74d48976:before {
   content: "\e6ef";
 }
-.iconjia1.data-v-5a0081c8:before {
+.iconjia1.data-v-74d48976:before {
   content: "\e618";
 }
-.iconchacha.data-v-5a0081c8:before {
+.iconchacha.data-v-74d48976:before {
   content: "\e64e";
 }
-.iconyewumingxi.data-v-5a0081c8:before {
+.iconyewumingxi.data-v-74d48976:before {
   content: "\e609";
 }
-.iconjingyingzhuangkuangbaogao.data-v-5a0081c8:before {
+.iconjingyingzhuangkuangbaogao.data-v-74d48976:before {
   content: "\e61e";
 }
-.iconliushui.data-v-5a0081c8:before {
+.iconliushui.data-v-74d48976:before {
   content: "\e60b";
 }
-.iconcailiaocaigou.data-v-5a0081c8:before {
+.iconcailiaocaigou.data-v-74d48976:before {
   content: "\e69a";
 }
-.iconcailiaoxiaoshou.data-v-5a0081c8:before {
+.iconcailiaoxiaoshou.data-v-74d48976:before {
   content: "\e6a7";
 }
-.iconyingshouyingfu-.data-v-5a0081c8:before {
+.iconyingshouyingfu-.data-v-74d48976:before {
   content: "\e638";
 }
-.iconkcguanli.data-v-5a0081c8:before {
+.iconkcguanli.data-v-74d48976:before {
   content: "\e668";
 }
-.iconqiankuan.data-v-5a0081c8:before {
+.iconqiankuan.data-v-74d48976:before {
   content: "\e7c7";
 }
-.iconsybaobiaox.data-v-5a0081c8:before {
+.iconsybaobiaox.data-v-74d48976:before {
   content: "\e630";
 }
-.icongengduo2.data-v-5a0081c8:before {
+.icongengduo2.data-v-74d48976:before {
   content: "\e608";
 }
-.iconyiwancheng.data-v-5a0081c8:before {
+.iconyiwancheng.data-v-74d48976:before {
   content: "\e624";
 }
-.iconweiwancheng.data-v-5a0081c8:before {
+.iconweiwancheng.data-v-74d48976:before {
   content: "\e625";
 }
-.iconarrLeft-fill.data-v-5a0081c8:before {
+.iconarrLeft-fill.data-v-74d48976:before {
   content: "\e607";
 }
-.iconshaixuan.data-v-5a0081c8:before {
+.iconshaixuan.data-v-74d48976:before {
   content: "\e62d";
 }
-.iconyeji.data-v-5a0081c8:before {
+.iconyeji.data-v-74d48976:before {
   content: "\e661";
 }
-.iconyuangongxinxi.data-v-5a0081c8:before {
+.iconyuangongxinxi.data-v-74d48976:before {
   content: "\e693";
 }
-.iconicon01.data-v-5a0081c8:before {
+.iconicon01.data-v-74d48976:before {
   content: "\e699";
 }
-.icongongyingshang.data-v-5a0081c8:before {
+.icongongyingshang.data-v-74d48976:before {
   content: "\e637";
 }
-.icondaohang-shenqingjiaban.data-v-5a0081c8:before {
+.icondaohang-shenqingjiaban.data-v-74d48976:before {
   content: "\e6dc";
 }
-.iconkaidan.data-v-5a0081c8:before {
+.iconkaidan.data-v-74d48976:before {
   content: "\e67a";
 }
-.iconkaoqin.data-v-5a0081c8:before {
+.iconkaoqin.data-v-74d48976:before {
   content: "\e606";
 }
-.iconsonghuo.data-v-5a0081c8:before {
+.iconsonghuo.data-v-74d48976:before {
   content: "\e604";
 }
-.iconzijinzhanghu1.data-v-5a0081c8:before {
+.iconzijinzhanghu1.data-v-74d48976:before {
   content: "\e629";
 }
-.iconshoufeitongji-yajinqiankuan.data-v-5a0081c8:before {
+.iconshoufeitongji-yajinqiankuan.data-v-74d48976:before {
   content: "\e780";
 }
-.iconduizhang1.data-v-5a0081c8:before {
+.iconduizhang1.data-v-74d48976:before {
   content: "\e63c";
 }
-.iconduizhang.data-v-5a0081c8:before {
+.iconduizhang.data-v-74d48976:before {
   content: "\e61c";
 }
-.iconjiaji.data-v-5a0081c8:before {
+.iconjiaji.data-v-74d48976:before {
   content: "\e60e";
 }
-.iconfahuo.data-v-5a0081c8:before {
+.iconfahuo.data-v-74d48976:before {
   content: "\e60c";
 }
-.iconzijinzhanghu.data-v-5a0081c8:before {
+.iconzijinzhanghu.data-v-74d48976:before {
   content: "\e65b";
 }
-.iconorder.data-v-5a0081c8:before {
+.iconorder.data-v-74d48976:before {
   content: "\e603";
 }
-.iconliucheng.data-v-5a0081c8:before {
+.iconliucheng.data-v-74d48976:before {
   content: "\e63b";
 }
-.iconbaojia.data-v-5a0081c8:before {
+.iconbaojia.data-v-74d48976:before {
   content: "\e605";
 }
-.iconqiandao.data-v-5a0081c8:before {
+.iconqiandao.data-v-74d48976:before {
   content: "\e62c";
 }
-.iconshoufukuan.data-v-5a0081c8:before {
+.iconshoufukuan.data-v-74d48976:before {
   content: "\e602";
 }
-.iconsaoma.data-v-5a0081c8:before {
+.iconsaoma.data-v-74d48976:before {
   content: "\e752";
 }
-.iconjiami.data-v-5a0081c8:before {
+.iconjiami.data-v-74d48976:before {
   content: "\e60a";
 }
-.iconmima.data-v-5a0081c8:before {
+.iconmima.data-v-74d48976:before {
   content: "\e674";
 }
-.iconsearch.data-v-5a0081c8:before {
+.iconsearch.data-v-74d48976:before {
   content: "\e601";
 }
-.iconcharacter.data-v-5a0081c8:before {
+.iconcharacter.data-v-74d48976:before {
   content: "\e600";
 }
-.iconjia.data-v-5a0081c8:before {
+.iconjia.data-v-74d48976:before {
   content: "\e641";
 }
-.con-conent.data-v-5a0081c8 {
+.con-conent.data-v-74d48976 {
   width: 100vw;
   background: #EBEDF0;
 }
-.con-conent .header.data-v-5a0081c8 {
+.con-conent .header.data-v-74d48976 {
     display: -webkit-box;
     display: -webkit-flex;
     display: flex;
@@ -252,16 +252,16 @@
     background: mediumseagreen;
     color: #fff;
 }
-.con-conent .header .sale.data-v-5a0081c8 {
+.con-conent .header .sale.data-v-74d48976 {
       color: #FF845B;
 }
-.con-conent .type.data-v-5a0081c8 {
+.con-conent .type.data-v-74d48976 {
     display: -webkit-box;
     display: -webkit-flex;
     display: flex;
     line-height: 60rpx;
 }
-.con-conent .type .type-box.data-v-5a0081c8 {
+.con-conent .type .type-box.data-v-74d48976 {
       -webkit-box-flex: 1;
       -webkit-flex: 1;
               flex: 1;
@@ -273,34 +273,58 @@
               justify-content: center;
       color: #999999;
 }
-.con-conent .type .active-box.data-v-5a0081c8 {
+.con-conent .type .active-box.data-v-74d48976 {
       border-bottom: 1px #5169FD solid;
       color: #5169FD;
       font-weight: 600;
 }
-.con-conent .dailycashlist.data-v-5a0081c8 {
+.con-conent .dailycashlist.data-v-74d48976 {
     width: 100%;
     margin: 0 auto;
 }
-.con-conent .dailycashlist .daily-list1.data-v-5a0081c8 {
+.con-conent .dailycashlist .daily-list1.data-v-74d48976 {
       width: 99%;
       border: 1px solid #EBEBEB;
-      margin-bottom: 60rpx;
+      margin-bottom: 40rpx;
       position: relative;
       border-radius: 5px;
       background: #fff;
 }
-.con-conent .dailycashlist .daily-list1 .daily-head.data-v-5a0081c8 {
+.con-conent .dailycashlist .daily-list1 .daily-head.data-v-74d48976 {
         border-bottom: 1px solid #EBEBEB;
         height: 120rpx;
         position: relative;
 }
-.con-conent .dailycashlist .daily-list1 .daily-head .chekc-btn.data-v-5a0081c8 {
+.con-conent .dailycashlist .daily-list1 .daily-head .flex-box.data-v-74d48976 {
+          display: -webkit-box;
+          display: -webkit-flex;
+          display: flex;
+}
+.con-conent .dailycashlist .daily-list1 .daily-head .flex-box .is-true.data-v-74d48976 {
+            -webkit-box-flex: 1;
+            -webkit-flex: 1;
+                    flex: 1;
+            display: -webkit-box;
+            display: -webkit-flex;
+            display: flex;
+            -webkit-box-pack: center;
+            -webkit-justify-content: center;
+                    justify-content: center;
+            -webkit-box-align: center;
+            -webkit-align-items: center;
+                    align-items: center;
+}
+.con-conent .dailycashlist .daily-list1 .daily-head .flex-box .title-box.data-v-74d48976 {
+            -webkit-box-flex: 5;
+            -webkit-flex: 5;
+                    flex: 5;
+}
+.con-conent .dailycashlist .daily-list1 .daily-head .chekc-btn.data-v-74d48976 {
           position: absolute;
           right: 10rpx;
           top: 0;
 }
-.con-conent .dailycashlist .daily-list1 .daily-head .chekc-btn .daily-status.data-v-5a0081c8 {
+.con-conent .dailycashlist .daily-list1 .daily-head .chekc-btn .daily-status.data-v-74d48976 {
             -webkit-box-flex: 1;
             -webkit-flex: 1;
                     flex: 1;
@@ -315,47 +339,47 @@
                     align-items: center;
             position: relative;
 }
-.con-conent .dailycashlist .daily-list1 .daily-head .chekc-btn .daily-status .form-where.data-v-5a0081c8 {
+.con-conent .dailycashlist .daily-list1 .daily-head .chekc-btn .daily-status .form-where.data-v-74d48976 {
               position: absolute;
               top: 40rpx;
               right: 30rpx;
               content: '';
 }
-.con-conent .dailycashlist .daily-list1 .daily-head .chekc-btn .daily-status .form-where .iconfont.data-v-5a0081c8 {
+.con-conent .dailycashlist .daily-list1 .daily-head .chekc-btn .daily-status .form-where .iconfont.data-v-74d48976 {
                 font-size: 32rpx;
                 color: #FFCD40;
 }
-.con-conent .dailycashlist .daily-list1 .daily-head .chekc-btn .daily-status .display-more.data-v-5a0081c8 {
+.con-conent .dailycashlist .daily-list1 .daily-head .chekc-btn .daily-status .display-more.data-v-74d48976 {
               position: absolute;
-              top: 70rpx;
+              top: 100rpx;
               right: 20rpx;
               content: '';
 }
-.con-conent .dailycashlist .daily-list1 .daily-head .chekc-btn .daily-status .display-more .icontop.data-v-5a0081c8 {
+.con-conent .dailycashlist .daily-list1 .daily-head .chekc-btn .daily-status .display-more .icontop.data-v-74d48976 {
                 font-size: 50rpx;
                 font-weight: 500;
                 color: #5169FD;
 }
-.con-conent .dailycashlist .daily-list1 .daily-head .chekc-btn .daily-status .display-more .tag.data-v-5a0081c8 {
+.con-conent .dailycashlist .daily-list1 .daily-head .chekc-btn .daily-status .display-more .tag.data-v-74d48976 {
                 -webkit-transition: all .3s ease-in;
                 transition: all .3s ease-in;
 }
-.con-conent .dailycashlist .daily-list1 .daily-head .chekc-btn .daily-status .display-more .icondown.data-v-5a0081c8 {
+.con-conent .dailycashlist .daily-list1 .daily-head .chekc-btn .daily-status .display-more .icondown.data-v-74d48976 {
                 -webkit-transform: rotate(180deg);
                         transform: rotate(180deg);
 }
-.con-conent .dailycashlist .daily-list1 .daily-head .daily-time.data-v-5a0081c8 {
+.con-conent .dailycashlist .daily-list1 .daily-head .daily-time.data-v-74d48976 {
           padding-left: 10rpx;
           color: #333;
 }
-.con-conent .dailycashlist .daily-list1 .daily-head .daily-name.data-v-5a0081c8 {
+.con-conent .dailycashlist .daily-list1 .daily-head .daily-name.data-v-74d48976 {
           padding-left: 10rpx;
           color: blue;
 }
-.con-conent .dailycashlist .daily-list1 .daily-head .daily-contacts.data-v-5a0081c8 {
+.con-conent .dailycashlist .daily-list1 .daily-head .daily-contacts.data-v-74d48976 {
           padding-left: 10rpx;
 }
-.con-conent .dailycashlist .daily-list1 .daily-conent.data-v-5a0081c8 {
+.con-conent .dailycashlist .daily-list1 .daily-conent.data-v-74d48976 {
         display: -webkit-box;
         display: -webkit-flex;
         display: flex;
@@ -369,44 +393,45 @@
         padding: 5px;
         color: grey;
 }
-.con-conent .dailycashlist .daily-list1 .daily-conent .daily-list.data-v-5a0081c8 {
+.con-conent .dailycashlist .daily-list1 .daily-conent .daily-list.data-v-74d48976 {
+          width: 100%;
           margin: 0 auto;
 }
-.con-conent .dailycashlist .daily-list1 .daily-conent .daily-list .daily-img.data-v-5a0081c8 {
+.con-conent .dailycashlist .daily-list1 .daily-conent .daily-list .daily-img.data-v-74d48976 {
             width: 14%;
 }
-.con-conent .dailycashlist .daily-list1 .daily-conent .daily-list .daily-img ._img.data-v-5a0081c8 {
+.con-conent .dailycashlist .daily-list1 .daily-conent .daily-list .daily-img ._img.data-v-74d48976 {
               width: 100%;
               height: 100%;
               border: 1px solid #F1EEEE;
               border-radius: 5%;
 }
-.con-conent .dailycashlist .daily-list1 .daily-conent .daily-list .daily-coninfo.data-v-5a0081c8 {
+.con-conent .dailycashlist .daily-list1 .daily-conent .daily-list .daily-coninfo.data-v-74d48976 {
             width: 78%;
 }
-.con-conent .dailycashlist .daily-list1 .daily-conent .daily-list .daily-coninfo .daily-coninfoone.data-v-5a0081c8 {
+.con-conent .dailycashlist .daily-list1 .daily-conent .daily-list .daily-coninfo .daily-coninfoone.data-v-74d48976 {
               width: 100%;
               display: -webkit-box;
               display: -webkit-flex;
               display: flex;
 }
-.con-conent .dailycashlist .daily-list1 .daily-conent .daily-list .daily-coninfo .daily-coninfoone view.data-v-5a0081c8 {
+.con-conent .dailycashlist .daily-list1 .daily-conent .daily-list .daily-coninfo .daily-coninfoone view.data-v-74d48976 {
                 padding: 4px;
 }
-.con-conent .dailycashlist .daily-list1 .daily-conent .daily-list .daily-coninfo .daily-coninfoone .daily-conleft.data-v-5a0081c8 {
+.con-conent .dailycashlist .daily-list1 .daily-conent .daily-list .daily-coninfo .daily-coninfoone .daily-conleft.data-v-74d48976 {
                 width: 70%;
 }
-.con-conent .dailycashlist .daily-list1 .daily-conent .daily-list .daily-coninfo .daily-coninfoone .daily-conright.data-v-5a0081c8 {
+.con-conent .dailycashlist .daily-list1 .daily-conent .daily-list .daily-coninfo .daily-coninfoone .daily-conright.data-v-74d48976 {
                 width: 30%;
 }
-.con-conent .dailycashlist .daily-list1 .daily-conent .daily-list .daily-coninfo .daily-coninfoone .daily-listprice.data-v-5a0081c8 {
+.con-conent .dailycashlist .daily-list1 .daily-conent .daily-list .daily-coninfo .daily-coninfoone .daily-listprice.data-v-74d48976 {
                 width: 30%;
                 color: green;
 }
-.con-conent .dailycashlist .daily-list1 .daily-conent .daily-list .daily-head .daily-time.data-v-5a0081c8 {
+.con-conent .dailycashlist .daily-list1 .daily-conent .daily-list .daily-head .daily-time.data-v-74d48976 {
             color: #999999;
 }
-.con-conent .dailycashlist .daily-list1 .btns.data-v-5a0081c8 {
+.con-conent .dailycashlist .daily-list1 .btns.data-v-74d48976 {
         height: 100rpx;
         border-top: 2rpx solid #EBECF0;
         display: -webkit-box;
@@ -417,10 +442,10 @@
         -webkit-flex-direction: row-reverse;
                 flex-direction: row-reverse;
 }
-.con-conent .dailycashlist .daily-list1 .btns .goPayPage.data-v-5a0081c8 {
+.con-conent .dailycashlist .daily-list1 .btns .goPayPage.data-v-74d48976 {
           margin: 20rpx 20rpx;
 }
-.con-conent .dailycashlist .daily-list1 .btns .goPayPage .goPay.data-v-5a0081c8 {
+.con-conent .dailycashlist .daily-list1 .btns .goPayPage .goPay.data-v-74d48976 {
             display: inline-block;
             line-height: 60rpx;
             padding: 0 10rpx;
@@ -431,20 +456,20 @@
             text-align: center;
             min-width: 100rpx;
 }
-.con-conent .over.data-v-5a0081c8 {
+.con-conent .over.data-v-74d48976 {
     color: #4ACA6D !important;
 }
-.con-conent .warning.data-v-5a0081c8 {
+.con-conent .warning.data-v-74d48976 {
     color: #FF845B !important;
 }
-.con-conent .recfooter.data-v-5a0081c8 {
+.con-conent .recfooter.data-v-74d48976 {
     position: fixed;
     bottom: 0;
     padding-bottom: 20rpx;
     width: 100%;
     background: #fff;
 }
-.con-conent .recfooter .recprice.data-v-5a0081c8 {
+.con-conent .recfooter .recprice.data-v-74d48976 {
       display: -webkit-box;
       display: -webkit-flex;
       display: flex;
@@ -456,7 +481,7 @@
       -webkit-align-items: center;
               align-items: center;
 }
-.con-conent .recfooter .recprice .rececheckbox.data-v-5a0081c8 {
+.con-conent .recfooter .recprice .rececheckbox.data-v-74d48976 {
         display: -webkit-box;
         display: -webkit-flex;
         display: flex;
@@ -470,7 +495,7 @@
                 justify-content: center;
         font-size: 28rpx;
 }
-.con-conent .recfooter .pricebtn.data-v-5a0081c8 {
+.con-conent .recfooter .pricebtn.data-v-74d48976 {
       width: 95%;
       margin: 0 auto;
       height: 120rpx;
@@ -484,11 +509,11 @@
       -webkit-justify-content: space-between;
               justify-content: space-between;
 }
-.con-conent .recfooter .pricebtn .left.data-v-5a0081c8 {
+.con-conent .recfooter .pricebtn .left.data-v-74d48976 {
         margin-left: 30rpx;
         color: #E21918;
 }
-.con-conent .recfooter .pricebtn .right.data-v-5a0081c8 {
+.con-conent .recfooter .pricebtn .right.data-v-74d48976 {
         display: inline-block;
         line-height: 1;
         white-space: nowrap;
@@ -502,15 +527,27 @@
         font-size: 14px;
         border-radius: 4px;
 }
-.con-conent .not-data.data-v-5a0081c8 {
+.con-conent .not-data.data-v-74d48976 {
     margin-top: 40rpx;
     line-height: 60rpx;
     text-align: center;
     color: #999999;
 }
-.w-text-over.data-v-5a0081c8 {
+.w-text-over.data-v-74d48976 {
   text-overflow: ellipsis;
   overflow: hidden;
   white-space: nowrap;
+}
+.con-conent .recfooter.data-v-74d48976 {
+  height: 0;
+  -webkit-transition: all .3s ease-in;
+  transition: all .3s ease-in;
+  -webkit-transform: translateY(70px);
+          transform: translateY(70px);
+}
+.con-conent .t-recfooter.data-v-74d48976 {
+  height: 120rpx;
+  -webkit-transform: translateY(0);
+          transform: translateY(0);
 }
 
