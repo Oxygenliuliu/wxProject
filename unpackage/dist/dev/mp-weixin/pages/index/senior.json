@@ -1,0 +1,7 @@
+{
+  "navigationBarTitleText": "高级设置",
+  "usingComponents": {
+    "xfl-select": "/components/xfl-select/xfl-select",
+    "copyright": "/components/customize/copyright"
+  }
+}
