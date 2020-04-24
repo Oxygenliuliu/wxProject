@@ -1,6 +1,10 @@
 {
   "pages": [
-    "pages/index/index"
+    "pages/index/index",
+    "pages/index/login",
+    "pages/index/senior",
+    "pages/index/user",
+    "pages/index/updataPassword"
   ],
   "subPackages": [],
   "window": {
@@ -8,6 +12,26 @@
     "navigationBarTitleText": "飞扬动力客户版",
     "navigationBarBackgroundColor": "#F8F8F8",
     "backgroundColor": "#F8F8F8"
+  },
+  "tabBar": {
+    "color": "#7A7E83",
+    "selectedColor": "#3cc51f",
+    "borderStyle": "black",
+    "backgroundColor": "#ffffff",
+    "list": [
+      {
+        "pagePath": "pages/index/index",
+        "iconPath": "static/pngs/dd.png",
+        "selectedIconPath": "static/pngs/dd1.png",
+        "text": "订单"
+      },
+      {
+        "pagePath": "pages/index/user",
+        "iconPath": "static/pngs/grzx.png",
+        "selectedIconPath": "static/pngs/grzx1.png",
+        "text": "个人中心"
+      }
+    ]
   },
   "usingComponents": {},
   "sitemapLocation": "sitemap.json"

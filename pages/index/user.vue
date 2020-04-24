@@ -35,6 +35,7 @@
 			// 退出
 			signOut(){
 				uni.clearStorage();
+				this.$store.commit('init');
 				uni.reLaunch({
 					url:'../index/login'
 				});
@@ -54,7 +55,7 @@
 		computed: {
 			userName: {
 				get: function(){
-					return this.$store.state.loginParams.personName
+					return this.$store.state.loginParams.userName
 				},
 				set: function(){
 					return '未知用户'

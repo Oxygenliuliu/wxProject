@@ -337,7 +337,6 @@
 						return
 					}
 				})
-				console.log(this.dailyList)
 			},
 			chooseAll(){//全选
 				this.allCheck = !this.allCheck;
@@ -446,7 +445,6 @@
 								return true;
 							}
 						})
-						console.log(flag)
 						if(!flag)arr1.push(i)
 					})
 					this.dailyList = arr1;

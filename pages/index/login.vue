@@ -108,17 +108,14 @@
 							name: userName,
 							password: userPassword
 						}
-						//更改vuex中值
+						//更改vuex中用户信息
 						this.$store.commit('changeUserIfno',obj);
-						try{
-							let obj1 = {
-								personName: data.UserName,
-								personId: data.UserId
+						let obj1 = {
+							personName: data.UserName,
+							personId: data.UserId,
 							}
-							this.$store.commit('changePersonInfo',obj1);
-						}catch(e){
-							//TODO handle the exception
-						}
+						//更改vuex客户信息
+						this.$store.commit('changePersonInfo',obj1);
 						
 						//更改storage中userInfo的值
 						let dataOfStorage = JSON.parse(uni.getStorageSync('userInfo'));
@@ -130,9 +127,27 @@
 						//更改storage中token的值
 						let token = data.token;
 						uni.setStorageSync('token',token);
-						uni.switchTab({
-							url: '../../pages/index/index'
-						})
+						this.$store.commit('changeLoginToken',token);
+						let pages = getCurrentPages();
+						let page = 
+						// #ifdef H5
+						pages[pages.length - 2];
+						// #endif
+						// #ifndef H5
+						pages[pages.length - 2];
+						// #endif
+						if(page){
+							if(page.route == 'pages/index/index'){
+								uni.$emit('update')
+								uni.switchTab({
+									url: '../../pages/index/index'
+								})
+							}
+						}else{
+							uni.switchTab({
+								url: '../../pages/index/index'
+							})
+						}
 					}else{
 						uni.showToast({title: data.message,icon: 'none'})
 					}
@@ -145,9 +160,12 @@
 				uni.showLoading({title: '登录中...'})
 				return new Promise((resolve,reject)=>{
 					uni.request({
-						url: this.url + '/public/login',
-						method: 'GET',
+						//url: this.url + '/public/login',
+						url: this.url + '/transit_server',
+						method: 'POST',
+						//method: 'GET',
 						data:{
+							interface_add: 'http://122.114.123.189:7798/public/login',
 							username: name,
 							password: password,
 							dbname: dbname

@@ -1,9 +1,11 @@
 <template>
 	<view class="container">
 		<view class="header" v-if="pageSettlement != -1">
-			<view class="title">客户:{{'张三'}}</view>
+			<view class="title">
+				<view class="person">客户: {{companyName}}</view>
+				<view class="scan" @tap="scan()"><span class='iconfont iconsaoma'></span></view>
+			</view>
 		</view>
-		<view v-if="pageSettlement == -1">{{data}}</view>
 		<view v-if="pageSettlement != -1">
 			<often-query :items='topItems' @dataChange='childQuery' v-if="pageSettlement != 0"></often-query>
 		</view>
@@ -11,6 +13,7 @@
 	</view> 
 </template>
 <script>
+	import ownScan from "@/common/js/scan.js"
 	import uniOrder from '@/components/uni-order/uniOrder.vue'
 	import oftenQuery from '@/components/uni-often/uni-often.vue'
 	export default {
@@ -22,10 +25,6 @@
 			return {
 				searchData:'',//搜索值
 				scrollHeight: 0,//滚动区域高度
-				typeList:[ //传入侧栏内容typeId唯一标识
-					{typeId: 105,name: '客户'},
-					{typeId: 106,name: '经手人'},
-				],
 				topItems:[ //顶部筛选传入值typeId唯一标识
 					{
 						name:'综合排序',
@@ -38,64 +37,14 @@
 				],
 				chooseData:{data1:[],data2:[]},//传入子组件的筛选条件
 				orderId: '',
-				data: '',
 				params: {},
-				pageSettlement: 0,//0收款 1兑账 2扫码
-				companyName: '',
+				pageSettlement: 2,//-1错误 1对账 2收款 3开单 4扫码
 				costScrollHeight:'',
-				dbname: ''
+				dbname: '',
+				optionsData: '',//存储分享进来的数据
 			}
 		},
 		onLoad(options){
-			if(options.q != undefined){
-				let q = decodeURIComponent(options.q);
-				let index = q.indexOf('=');
-				let str = q.substr(index + 1,q.length);
-				let obj = JSON.parse(decodeURIComponent(str));
-				if(typeof obj == 'object'){
-					this.companyName = obj.params.KEYWORDS || '未定义'
-					this.pageSettlement = obj.type;
-					this.dbname = obj.params.dbname || '演示账套';
-					this.params = {//搜索条件
-						QUERY_ID: 1,
-						BEGINDATE: obj.params.BEGINDATE || '1900-01-01',
-						ENDDATE: obj.params.ENDDATE || this.wpublic.getDay(1),//日期引用公共方法
-						PARTNER_ID: obj.params.PARTNER_ID || '',
-						BILL_ID: obj.params.ORDERID || '',
-						MODE: obj.params.KEYWORDS || 0,
-						PAGE_SIZE: 8,
-						PAGE_INDEX: 0,
-					}
-					this.$nextTick(function(){
-							this.$refs.uniOrder.jqueyForCustomer(obj);
-					})
-				}else{
-					this.pageSettlement = -1;
-					this.data = '参数错误201'
-				}
-			}else{
-				//let obj = {type: 2,params:{ORDERID:'1836934'}}
-				
-				let obj = {type: 2,params:{PARTNER_ID:'1757112'}}//客户:龙行天下
-				this.pageSettlement = obj.type
-				this.dbname = obj.params.dbname || '演示账套';
-				this.params = {//搜索条件
-					QUERY_ID: 1,
-					BEGINDATE: obj.params.BEGINDATE || '1900-01-01',
-					ENDDATE: obj.params.ENDDATE || this.wpublic.getDay(1),//日期引用公共方法
-					PARTNER_ID: obj.params.PARTNER_ID || '',
-					BILL_ID: obj.params.ORDERID || '',
-					MODE: obj.params.KEYWORDS || 0,
-					PAGE_SIZE: 8,
-					PAGE_INDEX: 0,
-				}
-				this.$nextTick(function(){
-						this.$refs.uniOrder.jqueyForCustomer(obj);
-				})
-				this.companyName = obj.params.KEYWORDS || '未定义'
-				//this.pageSettlement = -1
-				//this.data = '参数错误201'
-			}
 			uni.getSystemInfo({
 				success:(res)=>{
 					/* 设置当前滚动容器的高，若非窗口的高度，请自行修改 */
@@ -108,8 +57,96 @@
 				}
 			});
 			this.costScrollHeight = this.scrollHeight;
+			let token = uni.getStorageSync('token');
+			this.optionsData = {
+				q:options
+			};
+			if(token){
+				this.loginThenJquery();
+			}else{
+				uni.navigateTo({
+					url: '../../pages/index/login'
+				})
+			}
 		},
 		methods: {
+			loginThenJquery(){ //登录之后在执行查询
+				let options = this.optionsData.q;
+				let obj = {};
+				if(options.q != undefined){
+					let qq = options.q;
+					if(JSON.stringify(qq).indexOf('https') != -1){//扫码进入
+						//完整二维码
+						let q = decodeURIComponent(options.q.q);
+						let index = q.indexOf('=');
+						let str = decodeURIComponent(q.substr(index + 1,q.length));
+						obj = JSON.parse(str);
+					}else{//卡片进入
+						obj = JSON.parse(decodeURIComponent(options.q.data));
+					}
+					if(typeof obj == 'object'){
+						let parsonId = '';
+						try{
+							parsonId = JSON.parse(uni.getStorageSync('userInfo')).personId;
+						}catch(e){
+							//TODO handle the exception
+						}
+						if(obj.params.PartnerId == parsonId){
+							if(obj.type == 1 || obj.type == 2){//1对账 2收款3、开单4、扫码
+								this.params = {//搜索条件
+									QUERY_ID: 1,
+									BEGINDATE: obj.params.BEGINDATE || '1900-01-01',
+									ENDDATE: obj.params.ENDDATE || this.wpublic.getDay(1),//日期引用公共方法
+									PartnerId: obj.params.PartnerId || '',
+									Status: obj.params.STATUS || 0,
+									PAGE_SIZE: 8,
+									PAGE_INDEX: 0,
+								}
+							}else{
+								let mod = obj.type == 4?0:1
+								this.params = {//搜索条件
+									QUERY_ID: 2,
+									MODE: mod,
+									BILL_ID: obj.params.SessionId
+								}
+							}
+							this.$nextTick(function(){
+								this.$refs.uniOrder.jqueyForCustomer(obj);
+							})
+						}else{
+							this.pageSettlement = 1;
+							uni.showToast({title: '不是您的专属分享链接,您可以自行查看',icon: 'none'})
+						}
+					}else{
+						this.pageSettlement = 1;
+						uni.showToast({title: '参数错误',icon: 'none'})
+					}
+				}else{
+					let parsonId = '';
+					try{
+						parsonId = JSON.parse(uni.getStorageSync('userInfo')).personId;
+					}catch(e){
+						//TODO handle the exception
+					}
+					if(parsonId != ''){
+						this.params = {//搜索条件
+							QUERY_ID: 1,
+							BEGINDATE:'1900-01-01',
+							ENDDATE: this.wpublic.getDay(1),//日期引用公共方法
+							PartnerId: parsonId,
+							Status: 0,
+							PAGE_SIZE: 8,
+							PAGE_INDEX: 0,
+						}
+						this.$nextTick(function(){
+							this.$refs.uniOrder.jqueyForCustomer();
+						})
+					}else{
+						this.pageSettlement = -1;
+						this.data = '用户ID错误或不存在' + parsonId
+					}
+				}
+			},
 			changeScrollHeight(obj){//更改滚动条长度
 				let num = this.scrollHeight.replace('px','');
 				this.scrollHeight = obj.type?parseInt(num) - obj.height + 'px': this.costScrollHeight;
@@ -178,9 +215,6 @@
 			clickScreen(){//点击查询
 				this.$refs.uniOrder.fuzzyQuery(this.searchData)
 			},
-			judgeLogin(){ //自动登录
-				
-			},
 			someInit(){ //初始化
 				let data = uni.getStorageSync('userInfo');
 				if(data){
@@ -199,7 +233,6 @@
 							personName: data.personName,
 							personId: data.personId
 						}
-						console.log(token,'token')
 						this.$store.commit('changeLoginParams',obj);
 						this.$store.commit('changeLoginToken',token);
 					}
@@ -209,13 +242,57 @@
 					})
 				}
 			},
+			async scan(){
+				let data = await ownScan.ownScan();
+				let flag = this.isResult(data);
+				if(flag){
+					uni.showToast({title: '不是咱家二维码哟',icon: 'none'});
+					return
+				}
+				let mod = data.type == 4?0:1
+				this.params = {//搜索条件
+					QUERY_ID: 2,
+					MODE: mod,
+					BILL_ID: data.params.SessionId
+				}
+				this.$nextTick(function(){
+					this.$refs.uniOrder.jqueyForCustomer();
+				})
+				
+			},
+			isResult(data){
+				let flag = true;
+				if((typeof data) == 'object'){
+					if(data.type == 4){
+						if(data.params){
+							if(data.params.hasOwnProperty('PartnerId') && data.params.hasOwnProperty('SessionId')){
+								flag = false;
+							}
+						}
+					}
+				}
+				return flag;
+			},
 		},
 		async onPullDownRefresh() {
 			await this.$refs.uniOrder.pullRefresh();
 			uni.stopPullDownRefresh()
 		},
 		created() {
-			this.someInit()
+			this.someInit();
+			uni.$on('update',()=>{
+				this.loginThenJquery()
+			})
+		},
+		computed:{
+			companyName: {
+				get: function(){
+					return this.$store.state.loginParams.userName
+				},
+				set: function(){
+					return '未知用户'
+				}
+			}
 		}
 	}
 </script>
@@ -232,7 +309,45 @@
 		padding: 0 2.5%;
 		background: rgb(60, 179, 113);
 		color: $white;
-		.num{}
-		.sale{color: $font-red;}
+		.title{
+			display: flex;
+			justify-content: space-between;
+			width: 100%;
+			.person{}
+			.scan{
+				padding: 20rpx;
+				display: flex;
+				justify-content: center;
+				align-items: center;
+				.iconsaoma{
+					font-size: 40rpx;
+					font-weight: 600;
+				}
+			}
+		}
 	}
 </style>
+<!-- <template>
+	<view class="container">
+	</view> 
+</template>
+<script>
+	export default {
+		created() {
+			let token = uni.getStorageSync('token');
+			if(token){
+				uni.navigateTo({
+					url: '../pages/index/login'
+				})
+			}else{
+				uni.navigateTo({
+					url: '../pages/index/order'
+				})
+			}
+		}
+	}
+</script>
+
+<style lang="scss" scoped>
+
+</style> -->

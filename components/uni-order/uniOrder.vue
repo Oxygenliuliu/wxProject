@@ -67,7 +67,7 @@
 				<view class="not-data" v-show="dailyList.length == 0">没有数据</view>
 			</swiper-item>
 		</swiper>
-	<view class="recfooter" :class="{'t-recfooter':(tabIndex == 2||pageSettlement == 0)}">
+	<view class="recfooter" :class="{'t-recfooter':(tabIndex == 2||pageSettlement == 3 || pageSettlement == 4)}">
 		<view class="pricebtn">
 			<view class="left1">
 				<view v-show="chooseAllIsShow">
@@ -87,6 +87,7 @@
 </template>
 
 <script>
+	import judge from '@/common/js/loginPublic.js'
 	import md5 from '@/common/js/md5.js';
 	export default {
 		components: {
@@ -138,6 +139,8 @@
 				pageSettlement: 0,//0收款(数据不变) 1对账 2扫码
 				chooseAll: false,//全选
 				chooseAllIsShow: false,
+				temporaryData: {order_id: '',order_code: ""},//收款单临时数据
+				isPay: false,//是否完成支付
 			}
 		},
 		methods: {
@@ -246,7 +249,7 @@
 				this.pageLarge = {nowIndexA: 0,nowIndexB: 0,nowIndexC: 0};//现在处于页数
 				this.pageMaxSize = {pageA: -1,pageB: -1,pageC: -1};//最大页数
 				this.nowInfo = {nowIndex: 0,maxSize: 0};//传入接口页面参数
-				if(this.pageSettlement == 0)this.params.MODE = '2'//收款页面只展示未结清单子
+				if(this.pageSettlement == 0)this.params.Status = '2'//收款页面只展示未结清单子
 				for(let key in this.params){ //遍历重置筛选条件
 					this.params[key] = this.fparams[key]
 				}
@@ -276,7 +279,7 @@
 			ontabchange(e) {//滑动切换类别
 				let index = parseInt(e.target.current || e.detail.current);
 				this.tabIndex = index;
-				this.params.MODE = index;
+				this.params.Status = index;
 				this.setPageInfo();
 				this.changeType(index);
 				this.setOrderList(index,this.params);
@@ -302,21 +305,20 @@
 				})
 			},
 			wrquest(params = this.params){//接口调用
-				let params1 = {MODE: 0,BILL_ID: 1836934}
-				this.params.PAGE_INDEX = this.nowInfo.nowIndex;
+				//this.params.PAGE_INDEX = this.nowInfo.nowIndex;
 				uni.showLoading({title: '加载中...'})
 				return new Promise((resolv,reject)=>{
 					uni.request({
-						url: 
-						//'https://cloud.fydlsoft.com/transit_server',
-						this.url + '/public/query',
-						method: 'GET',
+						//url: this.url + '/public/query',
+						//url: 'http://192.168.199.145:7798' + '/public/query',
+						url: this.url + '/transit_server',
+						//method: 'GET',
+						method: 'POST',
 						data:{
-							//interface_add: 'http://122.114.123.189:7798/public/query',
-							//dbname: this.dbname,
+							interface_add: 'http://122.114.123.189:7798/public/query',
 							token: this.token,
-							params: params1,
-							//params: JSON.stringify(this.params),
+							//params: params,
+							params: JSON.stringify(params),
 						},
 						success:res=>{
 							if(res.data.status == 0){
@@ -381,7 +383,6 @@
 				arr1 = arr1.filter((i,j,self)=>{
 					return self.findIndex(el=>el.BILL_CODE == i.BILL_CODE)===j
 				})
-				
 				arr1.forEach((i,j)=>{
 					arr.forEach((k,l)=>{
 						let flag = false;
@@ -398,7 +399,7 @@
 						if(flag)i.child.push(obj)
 					})
 				})
-			return arr1;
+				return arr1;
 			},
 			returnAppendCheckBox(arr){ //分页的时候添加可控属性
 				arr.forEach((i,j)=>{
@@ -419,37 +420,165 @@
 				this.queryData();
 			},
 			jqueyForCustomer(obj){
-				this.pageSettlement = obj.type;
-				if(obj.type == 0){
-					[1].forEach(() => {
-						this.newsList.push(obj);
-					});
-					this.chooseAllIsShow = false
-				}else{
-					[1,2,3].forEach(() => {
-						this.newsList.push(obj);
-					});
-					this.chooseAllIsShow = true
-				}
+				this.pageSettlement = 1;
+				[1,2,3].forEach(i => {
+					this.newsList.push(i);
+				});
+				this.chooseAllIsShow = true
+				this.nowInfo.nowIndex = 0
 				this.queryData();
 			},
-			async pay(){
-				let data = await this.beforeWXpay('https://proxy.fydlsoft.com').catch(()=>{return {state: 500}});
-				if(data.statusCode == 200){
-					this.WXpay(data.data);
-				}else if(data.statusCode == 404){
-					uni.showToast({title: '启用备用域名',icon: 'none'})
-					let data1 = await this.beforeWXpay('https://cloud1.fydlsoft.com').catch(()=>{return {state: 500}});
-					if(data1.statusCode == 200){
-						this.WXpay(data1.data);
+			// 付款逻辑开始
+			package(){//组装数据
+				let data = [];
+				this.dailyList.forEach(i=>{
+					if(i.isTrue){
+						i.child.forEach((k,j)=>{
+							let obj = {};
+							obj.id = 0;
+							obj.LpTotal = '0'; //后期工艺价格
+							obj.total = k.BILLDETAIL_TOTALMONEY;
+							obj.giveupmoney = '0';
+							obj.refbillid = i.BILL_ID;
+							data.push(obj);
+						})
+					}
+				}) 
+				let params = {
+					MODE: 1,
+					order:{
+						id: 0,
+						type: 2,
+						Date:this.wpublic.getDay(0),
+						partnerid:1757112 ,//this.partnerid,//客户ID
+						paymenttypeid: 258,//支付方式
+						paymoney: this.sales,
+						total: this.sales,
+						remark: '微信小程序临时收款'
+					},
+					'OrderDetail': data
+				}
+				return params;
+			},
+			payStatus(){
+				let flag = false;
+				flag = this.dailyList.some(i=>{
+					if(i.isTrue)return true;
+				})
+				return flag
+			},
+			complete(params){//收成临时收款单
+				return new Promise((resolve,reject)=>{
+					uni.request({
+						url: this.url + '/transit_server',
+						//url: 'http://192.168.199.145:7798' + '/public/common',
+						//method: 'GET',
+						method: 'POST',
+						data:{
+							interface_add: 'http://122.114.123.189:7798/public/common',
+							//token: '6DC6E3E243773B841717190112723222',
+							token: this.token,
+							params: JSON.stringify(params),
+							//params:params,
+						},
+						success:(res)=> {
+							let result = judge.loginJudge(res.data.status);
+							if (result == false) {
+								return false;
+							}
+							if(res.data.status == 0){
+								resolve(res.data);
+							}else{
+								reject(uni.showToast({title:'订单修改失败'+res.data.message,icon:'none'}))
+							}
+						},
+						fail:(res)=> {
+							reject(uni.showToast({title: '网络繁忙,稍后重试'+res.message,icon:'none'}))
+							
+						},
+					})
+				})
+			},
+			async pay(){ //发起支付
+				if(!this.payStatus()){
+					uni.showToast({title: "请选择单子",icon: 'none'})
+					return
+				}
+				if(this.partnerid!=''){
+					let params = this.package();
+					let data = await this.complete(params).catch(()=>{return 'wrong'});
+					if(data!='wrong'){
+						if(data.status == 0){
+							this.temporaryData.order_id = data.order_id;
+							this.temporaryData.order_code = data.order_code.replace(/-/g,'');
+							this.taskPay(this.temporaryData.order_code);
+						}else{
+							uni.showToast({title: data.message,icon: 'none'})
+						}
 					}else{
-						uni.showToast({title: "网络异常请稍后重试",icon: 'none'})
+						uni.showToast({title: '异常',icon:'none'})
 					}
 				}else{
-					uni.showToast({title: "网络异常请稍后重试",icon: 'none'})
+					uni.showToast({title: '客户ID获取异常',icon:'none'})
 				}
 			},
-			beforeWXpay(url){
+			deleteOrder(params){ //删除订单 登账
+				uni.showLoading({title: '加载中...'})
+				uni.request({
+					//url: this.url + '/public/common',
+					url: this.url + '/transit_server',
+					method: 'POST',
+					//method: 'GET',
+					data:{
+						interface_add: 'http://122.114.123.189:7798/public/common',
+						token: this.token,
+						params: JSON.stringify(params),
+					},
+					success:res=>{
+						let result = judge.loginJudge(res.data.status);
+						if (result == false) {
+							uni.showToast({title: '验证码过期请重新登录',icon: 'none'})
+							return false;
+						}
+						if(res.data.status == 0 && res.data.FailureCount == 0){//登账接口返回成功
+							if(params.type == 1){
+								uni.showToast({title: '登账成功',icon: 'success'});
+								setTimeout(()=>{
+									this.pullRefresh()
+								},500)
+							}else if(params.type == -1){
+								if(this.isPay){
+									this.isPay = false;
+									this.taskBackMoney(this.temporaryData.order_code);
+								}
+								uni.showToast({title: '删除临时账单成功',icon: 'success'})
+							}
+						}else{
+							if(this.isPay){
+								this.isPay = false;
+								this.taskBackMoney(this.temporaryData.order_code);
+							}
+							try{
+								uni.showToast({
+									title: res.data.FailureIdList[0].ERROR
+								})
+							}catch(e){
+								//TODO handle the exception
+							}
+						}
+					},
+					fail:()=> {
+						if(this.isPay){
+							this.isPay = false;
+							this.taskBackMoney(this.temporaryData.order_code);
+						}
+					},
+					complete:()=> {
+						uni.hideLoading()
+					}
+				})
+			},
+			beforeWXpay(url,payOrderId){
 				uni.showLoading({title: '发起支付中...'});
 				return new Promise((resolve,reject)=>{
 					wx.login({
@@ -459,7 +588,7 @@
 							uni.request({
 								url: url + '/unifiedorder',
 								method: 'POST',
-								data:{total_fee: '0.01',code: code,out_trade_no: '123132456'},
+								data:{total_fee: '0.01',code: code,out_trade_no: payOrderId},
 								success: (res) => {
 									resolve(res)
 								},
@@ -472,7 +601,66 @@
 					})
 				})
 			},
-			backMoney(){
+			async taskPay(payOrderId){ //调用微信前运行
+				let data = await this.beforeWXpay('https://proxy.fydlsoft.com',payOrderId).catch(()=>{return {state: 500}});
+				if(data.statusCode == 200){ //服务器正常连接
+					if(data.data.status == 200){
+						this.WXpay(data.data);
+					}else{
+						this.taskPayWrong(data)
+					}
+				}else if(data.statusCode == 404){
+					uni.showToast({title: '启用备用域名',icon: 'none'})
+					let data1 = await this.beforeWXpay('https://cloud1.fydlsoft.com',payOrderId).catch(()=>{return {state: 500}});
+					if(data1.statusCode == 200){
+						if(data1.data.status == 200){
+							this.WXpay(data1.data);
+						}else{
+							this.taskPayWrong(data1)
+						}
+					}else{
+						this.taskPayWrong(data1)
+					}
+				}else{
+					this.taskPayWrong(data)
+				}
+			},
+			taskPayWrong(data){// 调用微信支付前的接口报错
+				let params = {
+					Mode:2,
+					type: -1,
+					idlist:[this.temporaryData.order_id]
+				}
+				uni.showToast({title: data.data.RETURN_MSG,icon: 'none'})
+				setTimeout(()=>{
+					this.deleteOrder(params);
+				},1000)
+			},
+			async taskBackMoney(payOrderId){
+				let data = await this.backMoney('https://proxy.fydlsoft.com',payOrderId).catch(()=>{return {state: 500}});
+				if(data.statusCode == 200){
+					if(data.data.status == 200){
+						uni.showToast({title: "退款成功",icon: 'success'})
+					}else{
+						uni.showToast({title: "自动退款失败请联系管理员",icon: 'success'})
+					}
+				}else if(data.statusCode == 404){
+					uni.showToast({title: '启用备用域名',icon: 'none'})
+					let data1 = await this.backMoney('https://cloud1.fydlsoft.com',payOrderId).catch(()=>{return {state: 500}});
+					if(data1.statusCode == 200){
+						if(data.data.status == 200){
+							uni.showToast({title: "退款成功",icon: 'success'})
+						}else{
+							uni.showToast({title: "自动退款失败请联系管理员",icon: 'success'})
+						}
+					}else{
+						uni.showToast({title: "自动退款失败请联系管理员",icon: 'success'})
+					}
+				}else{
+					uni.showToast({title: "自动退款失败请联系管理员",icon: 'success'})
+				}
+			},
+			backMoney(url,payOrderId){
 				uni.showLoading({title: '退款中...'});
 				return new Promise((resolve,reject)=>{
 					wx.login({
@@ -482,13 +670,15 @@
 							uni.request({
 								url: url + '/refund',
 								method: 'POST',
-								data:{total_fee: '0.01',code: code,out_trade_no: ''},
+								data:{total_fee: '0.01',code: code,out_trade_no: payOrderId},
 								success: (res) => {
-									resolve(res)
+									resolve(res);
 								},
 								fail:(erro)=> {
-									uni.showToast({title: '请求失败'+'错误码201',icon:"none"});
 									reject();
+								},
+								complete: () => {
+									uni.hideLoading();
 								}
 							})
 						}
@@ -503,18 +693,41 @@
 					package: data.package,
 					signType: data.signType,
 					paySign: data.paySign,
-					success: function (res) {
+					success: (res)=>{
 						uni.showLoading({
 							title:'支付结果查询中...',
 						})
+						console.log(res,'支付信息')
 						if (res.errMsg == 'requestPayment:ok'){
 							uni.showToast({title: '支付成功',icon: 'success'});
+							this.isPay = true;
+							let params = {
+								Mode:2,
+								type: 1,
+								idlist: [this.temporaryData.order_id]
+							}
+							this.deleteOrder(params);//登账
+						}else{
+							let params = {
+								Mode:2,
+								type: -1,
+								idlist:[this.temporaryData.order_id]
+							}
+							this.deleteOrder(params);
 						}
 					},
-					fail: function (err) {
+					fail: (err)=> {
 						uni.showToast({title: '支付已取消',icon: 'none'});
+						let params = {
+							Mode:2,
+							type: -1,
+							idlist:[this.temporaryData.order_id]
+						}
+						this.deleteOrder(params)
 					},
 					complete: () => {
+						this.isPay = true;
+							console.log('comm','错误')
 						uni.hideLoading();
 					}
 				})
@@ -558,8 +771,6 @@
 				}
 				this.appendCheckBox();
 			},
-		},
-		created() {
 		},
 		computed:{
 			url:{
@@ -612,6 +823,14 @@
 					
 				}
 			},
+			partnerid:{
+				set:function(){
+					return 0
+				},
+				get:function(){
+					return this.$store.state.loginParams.personId
+				}
+			},
 			sales: {
 				set: function(){
 					return 0
@@ -630,7 +849,7 @@
 					return nums;
 				}
 			},
-		}
+		},
 	}
 </script>
 

@@ -245,12 +245,16 @@ var SYNC_API_RE =
 
 var CONTEXT_API_RE = /^create|Manager$/;
 
+// Context例外情况
+var CONTEXT_API_RE_EXC = ['createBLEConnection'];
+
+// 同步例外情况
 var ASYNC_API = ['createBLEConnection'];
 
 var CALLBACK_API_RE = /^on|^off/;
 
 function isContextApi(name) {
-  return CONTEXT_API_RE.test(name);
+  return CONTEXT_API_RE.test(name) && CONTEXT_API_RE_EXC.indexOf(name) === -1;
 }
 function isSyncApi(name) {
   return SYNC_API_RE.test(name) && ASYNC_API.indexOf(name) === -1;
@@ -354,14 +358,12 @@ var interceptors = {
   promiseInterceptor: promiseInterceptor };
 
 
-
-
 var baseApi = /*#__PURE__*/Object.freeze({
   __proto__: null,
   upx2px: upx2px,
-  interceptors: interceptors,
   addInterceptor: addInterceptor,
-  removeInterceptor: removeInterceptor });
+  removeInterceptor: removeInterceptor,
+  interceptors: interceptors });
 
 
 var previewImage = {
@@ -604,8 +606,6 @@ var eventApi = /*#__PURE__*/Object.freeze({
   $emit: $emit });
 
 
-
-
 var api = /*#__PURE__*/Object.freeze({
   __proto__: null });
 
@@ -792,14 +792,14 @@ function createObserver(name) {
 }
 
 function initBehaviors(vueOptions, initBehavior) {
-  var vueBehaviors = vueOptions['behaviors'];
-  var vueExtends = vueOptions['extends'];
-  var vueMixins = vueOptions['mixins'];
+  var vueBehaviors = vueOptions.behaviors;
+  var vueExtends = vueOptions.extends;
+  var vueMixins = vueOptions.mixins;
 
-  var vueProps = vueOptions['props'];
+  var vueProps = vueOptions.props;
 
   if (!vueProps) {
-    vueOptions['props'] = vueProps = [];
+    vueOptions.props = vueProps = [];
   }
 
   var behaviors = [];
@@ -811,11 +811,11 @@ function initBehaviors(vueOptions, initBehavior) {
           vueProps.push('name');
           vueProps.push('value');
         } else {
-          vueProps['name'] = {
+          vueProps.name = {
             type: String,
             default: '' };
 
-          vueProps['value'] = {
+          vueProps.value = {
             type: [String, Number, Boolean, Array, Object, Date],
             default: '' };
 
@@ -884,7 +884,7 @@ function initProperties(props) {var isBehavior = arguments.length > 1 && argumen
     Object.keys(props).forEach(function (key) {
       var opts = props[key];
       if (isPlainObject(opts)) {// title:{type:String,default:''}
-        var value = opts['default'];
+        var value = opts.default;
         if (isFn(value)) {
           value = value();
         }
@@ -919,8 +919,12 @@ function wrapper$1(event) {
 
   event.target = event.target || {};
 
-  if (!hasOwn(event, 'detail')) {
+  if (!hasOwn(event, 'detail') || !event.detail) {
     event.detail = {};
+  }
+
+  if (!('markerId' in event.detail) && 'markerId' in event) {
+    event.detail.markerId = event.markerId;
   }
 
   if (isPlainObject(event.detail)) {
@@ -1075,11 +1079,11 @@ function handleEvent(event) {var _this = this;
   // [['tap',[['handle',[1,2,a]],['handle1',[1,2,a]]]]]
   var dataset = (event.currentTarget || event.target).dataset;
   if (!dataset) {
-    return console.warn("\u4E8B\u4EF6\u4FE1\u606F\u4E0D\u5B58\u5728");
+    return console.warn('事件信息不存在');
   }
   var eventOpts = dataset.eventOpts || dataset['event-opts']; // 支付宝 web-view 组件 dataset 非驼峰
   if (!eventOpts) {
-    return console.warn("\u4E8B\u4EF6\u4FE1\u606F\u4E0D\u5B58\u5728");
+    return console.warn('事件信息不存在');
   }
 
   // [['handle',[1,2,a]],['handle1',[1,2,a]]]
@@ -1338,8 +1342,8 @@ function parseBaseComponent(vueComponentOptions)
 
   {
     // 微信 multipleSlots 部分情况有 bug，导致内容顺序错乱 如 u-list，提供覆盖选项
-    if (vueOptions['mp-weixin'] && vueOptions['mp-weixin']['options']) {
-      Object.assign(options, vueOptions['mp-weixin']['options']);
+    if (vueOptions['mp-weixin'] && vueOptions['mp-weixin'].options) {
+      Object.assign(options, vueOptions['mp-weixin'].options);
     }
   }
 
@@ -1555,10 +1559,10 @@ uni$1;exports.default = _default;
 
 /***/ }),
 
-/***/ 106:
-/*!***********************************************************************************************************************!*\
-  !*** C:/Users/Administrator/Documents/HBuilderProjects/wxProject/components/customize/w-picker/city-data/province.js ***!
-  \***********************************************************************************************************************/
+/***/ 108:
+/*!**********************************************************************************!*\
+  !*** D:/uni-app项目/wxProject/components/customize/w-picker/city-data/province.js ***!
+  \**********************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -1705,10 +1709,10 @@ provinceData;exports.default = _default;
 
 /***/ }),
 
-/***/ 107:
-/*!*******************************************************************************************************************!*\
-  !*** C:/Users/Administrator/Documents/HBuilderProjects/wxProject/components/customize/w-picker/city-data/city.js ***!
-  \*******************************************************************************************************************/
+/***/ 109:
+/*!******************************************************************************!*\
+  !*** D:/uni-app项目/wxProject/components/customize/w-picker/city-data/city.js ***!
+  \******************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -3219,10 +3223,10 @@ cityData;exports.default = _default;
 
 /***/ }),
 
-/***/ 108:
-/*!*******************************************************************************************************************!*\
-  !*** C:/Users/Administrator/Documents/HBuilderProjects/wxProject/components/customize/w-picker/city-data/area.js ***!
-  \*******************************************************************************************************************/
+/***/ 110:
+/*!******************************************************************************!*\
+  !*** D:/uni-app项目/wxProject/components/customize/w-picker/city-data/area.js ***!
+  \******************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -15772,10 +15776,10 @@ areaData;exports.default = _default;
 
 /***/ }),
 
-/***/ 109:
-/*!*************************************************************************************************************!*\
-  !*** C:/Users/Administrator/Documents/HBuilderProjects/wxProject/components/customize/w-picker/w-picker.js ***!
-  \*************************************************************************************************************/
+/***/ 111:
+/*!************************************************************************!*\
+  !*** D:/uni-app项目/wxProject/components/customize/w-picker/w-picker.js ***!
+  \************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -16463,6 +16467,78 @@ initPicker;exports.default = _default;
 
 /***/ }),
 
+/***/ 126:
+/*!*******************************************************!*\
+  !*** D:/uni-app项目/wxProject/common/js/loginPublic.js ***!
+  \*******************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+/* WEBPACK VAR INJECTION */(function(uni) {Object.defineProperty(exports, "__esModule", { value: true });exports.default = void 0;var loginJudge = function loginJudge(data) {
+  if (data == 2) {
+    // uni.showToast({title:"登录身份已过期，正在重新登录中",icon:'none',duration:1000});
+    // let token = uni.getStorageSync('token');
+    var loginData = uni.getStorageSync('loginData');
+    setTimeout(function () {
+      uni.request({
+        url: getApp().globalData.webUrl + '/cs/login',
+        // url: 'http://192.168.199.194/pc/cds/testLogin',
+        method: 'GET',
+        data: {
+          username: loginData.username,
+          password: loginData.password,
+          dbname: loginData.dbname
+          // id:2
+        },
+        success: function success(res) {
+          if (res.data.status == 0) {
+            var token = res.data.token;
+            // loginData = {
+            // 	username: loginData.username,
+            // 	password: loginData.password,
+            // 	dbname: loginData.dbname
+            // }
+            // loginData = loginData;
+            uni.setStorageSync('token', token);
+            // uni.setStorageSync('loginData',loginData);
+            // uni.showToast({title:'登录成功',icon:'none',});
+          } else if (res.data.status == 4) {
+            // uni.showToast({title:'密码错误',icon:'none',});
+            setTimeout(function () {
+              uni.navigateTo({
+                url: '../../pages/index/login?page=0' });
+
+            }, 1000);
+          } else {
+            // uni.showToast({title:res.data.message,icon:'none',});
+            setTimeout(function () {
+              uni.navigateTo({
+                url: '../../pages/index/login?page=0' });
+
+            }, 1000);
+          }
+        },
+        fail: function fail(res) {
+          // uni.showToast({title:'登录失败',icon:'none',});
+          setTimeout(function () {
+            uni.navigateTo({
+              url: '../../pages/index/login?page=0' });
+
+          }, 1000);
+        } });
+
+    }, 1000);
+    return false;
+  }
+};var _default =
+
+{
+  loginJudge: loginJudge };exports.default = _default;
+/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./node_modules/@dcloudio/uni-mp-weixin/dist/index.js */ 1)["default"]))
+
+/***/ }),
+
 /***/ 14:
 /*!**********************************************************************************************************!*\
   !*** ./node_modules/@dcloudio/vue-cli-plugin-uni/packages/vue-loader/lib/runtime/componentNormalizer.js ***!
@@ -16593,9 +16669,9 @@ function normalizeComponent (
 /***/ }),
 
 /***/ 15:
-/*!***************************************************************************************!*\
-  !*** C:/Users/Administrator/Documents/HBuilderProjects/wxProject/common/js/public.js ***!
-  \***************************************************************************************/
+/*!**************************************************!*\
+  !*** D:/uni-app项目/wxProject/common/js/public.js ***!
+  \**************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -16685,9 +16761,9 @@ var getRandomNumber = function getRandomNumber(obj) {
 /***/ }),
 
 /***/ 16:
-/*!**********************************************************************************!*\
-  !*** C:/Users/Administrator/Documents/HBuilderProjects/wxProject/store/index.js ***!
-  \**********************************************************************************/
+/*!*********************************************!*\
+  !*** D:/uni-app项目/wxProject/store/index.js ***!
+  \*********************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -16703,6 +16779,10 @@ var store = new _vuex.default.Store({
   getters: {},
 
   mutations: {
+    init: function init(state) {
+      state.loginParams = { dbname: '', url: '', userName: '', userPassword: '', personName: '', personId: '' };
+      state.token = '';
+    },
     changeLoginParams: function changeLoginParams(state, obj) {
       state.loginParams = obj;
     },
@@ -22657,10 +22737,10 @@ function initMixin (Vue) {
     initEvents(vm);
     initRender(vm);
     callHook(vm, 'beforeCreate');
-    vm.mpHost !== 'mp-toutiao' && initInjections(vm); // resolve injections before data/props  
+    !vm._$fallback && initInjections(vm); // resolve injections before data/props  
     initState(vm);
-    vm.mpHost !== 'mp-toutiao' && initProvide(vm); // resolve provide after data/props
-    vm.mpHost !== 'mp-toutiao' && callHook(vm, 'created');      
+    !vm._$fallback && initProvide(vm); // resolve provide after data/props
+    !vm._$fallback && callHook(vm, 'created');      
 
     /* istanbul ignore if */
     if ( true && config.performance && mark) {
@@ -23376,7 +23456,7 @@ function mountComponent$1(
     }
   }
   
-  vm.mpHost !== 'mp-toutiao' && callHook(vm, 'beforeMount');
+  !vm._$fallback && callHook(vm, 'beforeMount');
 
   var updateComponent = function () {
     vm._update(vm._render(), hydrating);
@@ -24507,6 +24587,352 @@ if (hadRuntime) {
 
 /***/ }),
 
+/***/ 27:
+/*!************************************************!*\
+  !*** D:/uni-app项目/wxProject/common/js/scan.js ***!
+  \************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+/* WEBPACK VAR INJECTION */(function(uni) {Object.defineProperty(exports, "__esModule", { value: true });exports.default = void 0;var _regenerator = _interopRequireDefault(__webpack_require__(/*! ./node_modules/@vue/babel-preset-app/node_modules/@babel/runtime/regenerator */ 24));var _permission = _interopRequireDefault(__webpack_require__(/*! @/common/js/permission.js */ 28));function _interopRequireDefault(obj) {return obj && obj.__esModule ? obj : { default: obj };}function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) {try {var info = gen[key](arg);var value = info.value;} catch (error) {reject(error);return;}if (info.done) {resolve(value);} else {Promise.resolve(value).then(_next, _throw);}}function _asyncToGenerator(fn) {return function () {var self = this,args = arguments;return new Promise(function (resolve, reject) {var gen = fn.apply(self, args);function _next(value) {asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value);}function _throw(err) {asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err);}_next(undefined);});};} // 扫码
+var ownScan = /*#__PURE__*/function () {var _ref = _asyncToGenerator( /*#__PURE__*/_regenerator.default.mark(function _callee() {var scanData;return _regenerator.default.wrap(function _callee$(_context) {while (1) {switch (_context.prev = _context.next) {case 0:_context.next = 2;return (
+              scan());case 2:scanData = _context.sent;return _context.abrupt("return",
+            scanData);case 4:case "end":return _context.stop();}}}, _callee);}));return function ownScan() {return _ref.apply(this, arguments);};}();
+
+
+var scan = /*#__PURE__*/function () {var _ref2 = _asyncToGenerator( /*#__PURE__*/_regenerator.default.mark(function _callee2() {var scanData;return _regenerator.default.wrap(function _callee2$(_context2) {while (1) {switch (_context2.prev = _context2.next) {case 0:
+
+
+
+
+
+
+            scanData = new Promise(function (resolv, reject) {
+              uni.scanCode({
+                success: function success(res) {
+                  //扫码拿到返回值处理逻辑
+                  resolv(JSON.parse(res.result));
+                },
+                fail: function fail(err) {
+
+                  uni.getSetting({
+                    success: function success(res) {
+                      var authStatus = res.authSetting['scope.camera'];
+                      if (!authStatus) {
+                        uni.showModal({
+                          title: '授权失败',
+                          content: 'Hello uni-app需要使用您的相机，请在设置界面打开相关权限',
+                          success: function success(res) {
+                            if (res.confirm) {
+                              uni.openSetting();
+                            }
+                          } });
+
+                      }
+                    } });
+
+
+                } });
+
+            });return _context2.abrupt("return",
+            scanData);case 2:case "end":return _context2.stop();}}}, _callee2);}));return function scan() {return _ref2.apply(this, arguments);};}();var _default =
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+{
+  ownScan: ownScan };exports.default = _default;
+/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./node_modules/@dcloudio/uni-mp-weixin/dist/index.js */ 1)["default"]))
+
+/***/ }),
+
+/***/ 28:
+/*!******************************************************!*\
+  !*** D:/uni-app项目/wxProject/common/js/permission.js ***!
+  \******************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+/* WEBPACK VAR INJECTION */(function(uni) {/// null = 未请求，1 = 已允许，0 = 拒绝|受限, 2 = 系统未开启
+
+var isIOS;
+
+function album() {
+  var result = 0;
+  var PHPhotoLibrary = plus.ios.import("PHPhotoLibrary");
+  var authStatus = PHPhotoLibrary.authorizationStatus();
+  if (authStatus === 0) {
+    result = null;
+  } else if (authStatus == 3) {
+    result = 1;
+  } else {
+    result = 0;
+  }
+  plus.ios.deleteObject(PHPhotoLibrary);
+  return result;
+}
+
+function camera() {
+  var result = 0;
+  var AVCaptureDevice = plus.ios.import("AVCaptureDevice");
+  var authStatus = AVCaptureDevice.authorizationStatusForMediaType('vide');
+  if (authStatus === 0) {
+    result = null;
+  } else if (authStatus == 3) {
+    result = 1;
+  } else {
+    result = 0;
+  }
+  plus.ios.deleteObject(AVCaptureDevice);
+  return result;
+}
+
+function location() {
+  var result = 0;
+  var cllocationManger = plus.ios.import("CLLocationManager");
+  var enable = cllocationManger.locationServicesEnabled();
+  var status = cllocationManger.authorizationStatus();
+  if (!enable) {
+    result = 2;
+  } else if (status === 0) {
+    result = null;
+  } else if (status === 3 || status === 4) {
+    result = 1;
+  } else {
+    result = 0;
+  }
+  plus.ios.deleteObject(cllocationManger);
+  return result;
+}
+
+function push() {
+  var result = 0;
+  var UIApplication = plus.ios.import("UIApplication");
+  var app = UIApplication.sharedApplication();
+  var enabledTypes = 0;
+  if (app.currentUserNotificationSettings) {
+    var settings = app.currentUserNotificationSettings();
+    enabledTypes = settings.plusGetAttribute("types");
+    if (enabledTypes == 0) {
+      result = 0;
+      console.log("推送权限没有开启");
+    } else {
+      result = 1;
+      console.log("已经开启推送功能!");
+    }
+    plus.ios.deleteObject(settings);
+  } else {
+    enabledTypes = app.enabledRemoteNotificationTypes();
+    if (enabledTypes == 0) {
+      result = 3;
+      console.log("推送权限没有开启!");
+    } else {
+      result = 4;
+      console.log("已经开启推送功能!");
+    }
+  }
+  plus.ios.deleteObject(app);
+  plus.ios.deleteObject(UIApplication);
+  return result;
+}
+
+function contact() {
+  var result = 0;
+  var CNContactStore = plus.ios.import("CNContactStore");
+  var cnAuthStatus = CNContactStore.authorizationStatusForEntityType(0);
+  if (authStatus === 0) {
+    result = null;
+  } else if (authStatus == 3) {
+    result = 1;
+  } else {
+    result = 0;
+  }
+  plus.ios.deleteObject(CNContactStore);
+  return result;
+}
+
+function record() {
+  var result = null;
+  var avaudiosession = plus.ios.import("AVAudioSession");
+  var avaudio = avaudiosession.sharedInstance();
+  var status = avaudio.recordPermission();
+  console.log("permissionStatus:" + status);
+  if (status === 1970168948) {
+    result = null;
+  } else if (status === 1735552628) {
+    result = 1;
+  } else {
+    result = 0;
+  }
+  plus.ios.deleteObject(avaudiosession);
+  return result;
+}
+
+function calendar() {
+  var result = null;
+  var EKEventStore = plus.ios.import("EKEventStore");
+  var ekAuthStatus = EKEventStore.authorizationStatusForEntityType(0);
+  if (ekAuthStatus == 3) {
+    result = 1;
+    console.log("日历权限已经开启");
+  } else {
+    console.log("日历权限没有开启");
+  }
+  plus.ios.deleteObject(EKEventStore);
+  return result;
+}
+
+function memo() {
+  var result = null;
+  var EKEventStore = plus.ios.import("EKEventStore");
+  var ekAuthStatus = EKEventStore.authorizationStatusForEntityType(1);
+  if (ekAuthStatus == 3) {
+    result = 1;
+    console.log("备忘录权限已经开启");
+  } else {
+    console.log("备忘录权限没有开启");
+  }
+  plus.ios.deleteObject(EKEventStore);
+  return result;
+}
+
+
+function requestIOS(permissionID) {
+  return new Promise(function (resolve, reject) {
+    switch (permissionID) {
+      case "push":
+        resolve(push());
+        break;
+      case "location":
+        resolve(location());
+        break;
+      case "record":
+        resolve(record());
+        break;
+      case "camera":
+        resolve(camera());
+        break;
+      case "album":
+        resolve(album());
+        break;
+      case "contact":
+        resolve(contact());
+        break;
+      case "calendar":
+        resolve(calendar());
+        break;
+      case "memo":
+        resolve(memo());
+        break;
+      default:
+        resolve(0);
+        break;}
+
+  });
+}
+
+function requestAndroid(permissionID) {
+  return new Promise(function (resolve, reject) {
+    plus.android.requestPermissions(
+    [permissionID],
+    function (resultObj) {
+      var result = 0;
+      for (var i = 0; i < resultObj.granted.length; i++) {
+        var grantedPermission = resultObj.granted[i];
+        console.log('已获取的权限：' + grantedPermission);
+        result = 1;
+      }
+      for (var i = 0; i < resultObj.deniedPresent.length; i++) {
+        var deniedPresentPermission = resultObj.deniedPresent[i];
+        console.log('拒绝本次申请的权限：' + deniedPresentPermission);
+        result = 0;
+      }
+      for (var i = 0; i < resultObj.deniedAlways.length; i++) {
+        var deniedAlwaysPermission = resultObj.deniedAlways[i];
+        console.log('永久拒绝申请的权限：' + deniedAlwaysPermission);
+        result = -1;
+      }
+      resolve(result);
+    },
+    function (error) {
+      console.log('result error: ' + error.message);
+      resolve({
+        code: error.code,
+        message: error.message });
+
+    });
+
+  });
+}
+
+function gotoAppPermissionSetting() {
+  if (permission.isIOS) {
+    var UIApplication = plus.ios.import("UIApplication");
+    var application2 = UIApplication.sharedApplication();
+    var NSURL2 = plus.ios.import("NSURL");
+    var setting2 = NSURL2.URLWithString("app-settings:");
+    application2.openURL(setting2);
+    plus.ios.deleteObject(setting2);
+    plus.ios.deleteObject(NSURL2);
+    plus.ios.deleteObject(application2);
+  } else {
+    var Intent = plus.android.importClass("android.content.Intent");
+    var Settings = plus.android.importClass("android.provider.Settings");
+    var Uri = plus.android.importClass("android.net.Uri");
+    var mainActivity = plus.android.runtimeMainActivity();
+    var intent = new Intent();
+    intent.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+    var uri = Uri.fromParts("package", mainActivity.getPackageName(), null);
+    intent.setData(uri);
+    mainActivity.startActivity(intent);
+  }
+}
+
+function gotoiOSPermissionSetting() {
+  var UIApplication = plus.ios.import("UIApplication");
+  var application2 = UIApplication.sharedApplication();
+  var NSURL2 = plus.ios.import("NSURL");
+  var setting2 = NSURL2.URLWithString("App-prefs:root=General");
+  application2.openURL(setting2);
+
+  plus.ios.deleteObject(setting2);
+  plus.ios.deleteObject(NSURL2);
+  plus.ios.deleteObject(application2);
+}
+
+var permission = {
+  get isIOS() {
+    return typeof isIOS === 'boolean' ? isIOS : isIOS = uni.getSystemInfoSync().platform === 'ios';
+  },
+  requestIOS: requestIOS,
+  requestAndroid: requestAndroid,
+  gotoAppSetting: gotoAppPermissionSetting,
+  gotoiOSSetting: gotoiOSPermissionSetting };
+
+
+module.exports = permission;
+/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./node_modules/@dcloudio/uni-mp-weixin/dist/index.js */ 1)["default"]))
+
+/***/ }),
+
 /***/ 3:
 /*!***********************************!*\
   !*** (webpack)/buildin/global.js ***!
@@ -24539,9 +24965,9 @@ module.exports = g;
 /***/ }),
 
 /***/ 4:
-/*!******************************************************************************!*\
-  !*** C:/Users/Administrator/Documents/HBuilderProjects/wxProject/pages.json ***!
-  \******************************************************************************/
+/*!*****************************************!*\
+  !*** D:/uni-app项目/wxProject/pages.json ***!
+  \*****************************************/
 /*! no static exports found */
 /***/ (function(module, exports) {
 
@@ -25443,14 +25869,14 @@ main();
 /*! exports provided: _from, _id, _inBundle, _integrity, _location, _phantomChildren, _requested, _requiredBy, _resolved, _shasum, _spec, _where, author, bugs, bundleDependencies, deprecated, description, devDependencies, files, gitHead, homepage, license, main, name, repository, scripts, version, default */
 /***/ (function(module) {
 
-module.exports = {"_from":"@dcloudio/uni-stat@next","_id":"@dcloudio/uni-stat@2.0.0-261120200409001","_inBundle":false,"_integrity":"sha512-iM1vsCzUEg80lCM7rSAkh+28ahjS9zQgiGsEoHxawCD9s7rTFnSRIaOuc7WHeQt6EclGUUIrMccYHXsLsNAXZg==","_location":"/@dcloudio/uni-stat","_phantomChildren":{},"_requested":{"type":"tag","registry":true,"raw":"@dcloudio/uni-stat@next","name":"@dcloudio/uni-stat","escapedName":"@dcloudio%2funi-stat","scope":"@dcloudio","rawSpec":"next","saveSpec":null,"fetchSpec":"next"},"_requiredBy":["#USER","/","/@dcloudio/vue-cli-plugin-uni"],"_resolved":"https://registry.npmjs.org/@dcloudio/uni-stat/-/uni-stat-2.0.0-261120200409001.tgz","_shasum":"e9daeef120f133bf3d4ca0505f5b2abed0e874a7","_spec":"@dcloudio/uni-stat@next","_where":"/Users/guoshengqiang/Documents/dcloud-plugins/release/uniapp-cli","author":"","bugs":{"url":"https://github.com/dcloudio/uni-app/issues"},"bundleDependencies":false,"deprecated":false,"description":"","devDependencies":{"@babel/core":"^7.5.5","@babel/preset-env":"^7.5.5","eslint":"^6.1.0","rollup":"^1.19.3","rollup-plugin-babel":"^4.3.3","rollup-plugin-clear":"^2.0.7","rollup-plugin-commonjs":"^10.0.2","rollup-plugin-copy":"^3.1.0","rollup-plugin-eslint":"^7.0.0","rollup-plugin-json":"^4.0.0","rollup-plugin-node-resolve":"^5.2.0","rollup-plugin-replace":"^2.2.0","rollup-plugin-uglify":"^6.0.2"},"files":["dist","package.json","LICENSE"],"gitHead":"ff0877f516c1cc986cf2d7eae2bf5030c58050f9","homepage":"https://github.com/dcloudio/uni-app#readme","license":"Apache-2.0","main":"dist/index.js","name":"@dcloudio/uni-stat","repository":{"type":"git","url":"git+https://github.com/dcloudio/uni-app.git","directory":"packages/uni-stat"},"scripts":{"build":"NODE_ENV=production rollup -c rollup.config.js","dev":"NODE_ENV=development rollup -w -c rollup.config.js"},"version":"2.0.0-261120200409001"};
+module.exports = {"_from":"@dcloudio/uni-stat@next","_id":"@dcloudio/uni-stat@2.0.0-26920200421003","_inBundle":false,"_integrity":"sha512-Aa6R66ZF2pIK9XB+Y7QbSW2GficyNTcdT7fnxFw5gY1eeY+u8oT7rTpZrL1W2qKbqf2FbsNPDjZrg1nRj6RxkQ==","_location":"/@dcloudio/uni-stat","_phantomChildren":{},"_requested":{"type":"tag","registry":true,"raw":"@dcloudio/uni-stat@next","name":"@dcloudio/uni-stat","escapedName":"@dcloudio%2funi-stat","scope":"@dcloudio","rawSpec":"next","saveSpec":null,"fetchSpec":"next"},"_requiredBy":["#USER","/","/@dcloudio/vue-cli-plugin-uni"],"_resolved":"https://registry.npmjs.org/@dcloudio/uni-stat/-/uni-stat-2.0.0-26920200421003.tgz","_shasum":"c08ebc00afa71edd9ed388fc4bf411e42d458ac5","_spec":"@dcloudio/uni-stat@next","_where":"/Users/guoshengqiang/Documents/dcloud-plugins/release/uniapp-cli","author":"","bugs":{"url":"https://github.com/dcloudio/uni-app/issues"},"bundleDependencies":false,"deprecated":false,"description":"","devDependencies":{"@babel/core":"^7.5.5","@babel/preset-env":"^7.5.5","eslint":"^6.1.0","rollup":"^1.19.3","rollup-plugin-babel":"^4.3.3","rollup-plugin-clear":"^2.0.7","rollup-plugin-commonjs":"^10.0.2","rollup-plugin-copy":"^3.1.0","rollup-plugin-eslint":"^7.0.0","rollup-plugin-json":"^4.0.0","rollup-plugin-node-resolve":"^5.2.0","rollup-plugin-replace":"^2.2.0","rollup-plugin-uglify":"^6.0.2"},"files":["dist","package.json","LICENSE"],"gitHead":"a7035ab7f2a83dbc2c75090de34f68e5a01224a7","homepage":"https://github.com/dcloudio/uni-app#readme","license":"Apache-2.0","main":"dist/index.js","name":"@dcloudio/uni-stat","repository":{"type":"git","url":"git+https://github.com/dcloudio/uni-app.git","directory":"packages/uni-stat"},"scripts":{"build":"NODE_ENV=production rollup -c rollup.config.js","dev":"NODE_ENV=development rollup -w -c rollup.config.js"},"version":"2.0.0-26920200421003"};
 
 /***/ }),
 
-/***/ 66:
-/*!************************************************************************************!*\
-  !*** C:/Users/Administrator/Documents/HBuilderProjects/wxProject/common/js/md5.js ***!
-  \************************************************************************************/
+/***/ 68:
+/*!***********************************************!*\
+  !*** D:/uni-app项目/wxProject/common/js/md5.js ***!
+  \***********************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -25480,7 +25906,7 @@ module.exports = {"_from":"@dcloudio/uni-stat@next","_id":"@dcloudio/uni-stat@2.
     root = self;
   }
   var COMMON_JS = !root.JS_MD5_NO_COMMON_JS && typeof module === 'object' && module.exports;
-  var AMD =  true && __webpack_require__(/*! !webpack amd options */ 69);
+  var AMD =  true && __webpack_require__(/*! !webpack amd options */ 71);
   var ARRAY_BUFFER = !root.JS_MD5_NO_ARRAY_BUFFER && typeof ArrayBuffer !== 'undefined';
   var HEX_CHARS = '0123456789abcdef'.split('');
   var EXTRA = [128, 32768, 8388608, -2147483648];
@@ -26140,11 +26566,11 @@ module.exports = {"_from":"@dcloudio/uni-stat@next","_id":"@dcloudio/uni-stat@2.
     }
   }
 })();
-/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./node_modules/node-libs-browser/mock/process.js */ 67), __webpack_require__(/*! (webpack)/buildin/global.js */ 3)))
+/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./../../../../HBuilderX.2.3.7.20191024.full/HBuilderX/plugins/uniapp-cli/node_modules/node-libs-browser/mock/process.js */ 69), __webpack_require__(/*! ./../../../../HBuilderX.2.3.7.20191024.full/HBuilderX/plugins/uniapp-cli/node_modules/webpack/buildin/global.js */ 3)))
 
 /***/ }),
 
-/***/ 67:
+/***/ 69:
 /*!********************************************************!*\
   !*** ./node_modules/node-libs-browser/mock/process.js ***!
   \********************************************************/
@@ -26175,7 +26601,7 @@ exports.binding = function (name) {
     var path;
     exports.cwd = function () { return cwd };
     exports.chdir = function (dir) {
-        if (!path) path = __webpack_require__(/*! path */ 68);
+        if (!path) path = __webpack_require__(/*! path */ 70);
         cwd = path.resolve(dir, cwd);
     };
 })();
@@ -26189,7 +26615,19 @@ exports.features = {};
 
 /***/ }),
 
-/***/ 68:
+/***/ 7:
+/*!**********************************************************!*\
+  !*** D:/uni-app项目/wxProject/pages.json?{"type":"style"} ***!
+  \**********************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });exports.default = void 0;var _default = { "pages": { "pages/index/index": { "navigationBarTitleText": "我的订单", "enablePullDownRefresh": true }, "pages/index/login": { "navigationBarTitleText": "登录", "navigationStyle": "custom" }, "pages/index/senior": { "navigationBarTitleText": "高级设置" }, "pages/index/user": { "navigationBarTitleText": "个人中心" }, "pages/index/updataPassword": { "navigationBarTitleText": "修改密码" } }, "globalStyle": { "navigationBarTextStyle": "black", "navigationBarTitleText": "飞扬动力客户版", "navigationBarBackgroundColor": "#F8F8F8", "backgroundColor": "#F8F8F8" } };exports.default = _default;
+
+/***/ }),
+
+/***/ 70:
 /*!***********************************************!*\
   !*** ./node_modules/path-browserify/index.js ***!
   \***********************************************/
@@ -26499,11 +26937,11 @@ var substr = 'ab'.substr(-1) === 'b'
     }
 ;
 
-/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./../node-libs-browser/mock/process.js */ 67)))
+/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./../node-libs-browser/mock/process.js */ 69)))
 
 /***/ }),
 
-/***/ 69:
+/***/ 71:
 /*!****************************************!*\
   !*** (webpack)/buildin/amd-options.js ***!
   \****************************************/
@@ -26517,22 +26955,10 @@ module.exports = __webpack_amd_options__;
 
 /***/ }),
 
-/***/ 7:
-/*!***********************************************************************************************!*\
-  !*** C:/Users/Administrator/Documents/HBuilderProjects/wxProject/pages.json?{"type":"style"} ***!
-  \***********************************************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });exports.default = void 0;var _default = { "pages": { "pages/index/index": { "navigationBarTitleText": "我的订单" }, "pages/index/login": { "navigationBarTitleText": "登录", "navigationStyle": "custom" }, "pages/index/senior": { "navigationBarTitleText": "高级设置" }, "pages/index/user": { "navigationBarTitleText": "个人中心" }, "pages/index/updataPassword": { "navigationBarTitleText": "修改密码" } }, "globalStyle": { "navigationBarTextStyle": "black", "navigationBarTitleText": "飞扬动力客户版", "navigationBarBackgroundColor": "#F8F8F8", "backgroundColor": "#F8F8F8" } };exports.default = _default;
-
-/***/ }),
-
 /***/ 8:
-/*!**********************************************************************************************!*\
-  !*** C:/Users/Administrator/Documents/HBuilderProjects/wxProject/pages.json?{"type":"stat"} ***!
-  \**********************************************************************************************/
+/*!*********************************************************!*\
+  !*** D:/uni-app项目/wxProject/pages.json?{"type":"stat"} ***!
+  \*********************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -26541,10 +26967,10 @@ Object.defineProperty(exports, "__esModule", { value: true });exports.default = 
 
 /***/ }),
 
-/***/ 91:
-/*!************************************************************************************************!*\
-  !*** C:/Users/Administrator/Documents/HBuilderProjects/wxProject/components/uni-icon/icons.js ***!
-  \************************************************************************************************/
+/***/ 93:
+/*!***********************************************************!*\
+  !*** D:/uni-app项目/wxProject/components/uni-icon/icons.js ***!
+  \***********************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 

@@ -9,6 +9,10 @@ const store=new Vuex.Store({
 	getters:{
 	},
 	mutations:{
+		init(state){
+			state.loginParams = {dbname: '',url: '',userName: '',userPassword: '',personName: '',personId: ''}
+			state.token = ''
+		},
 		changeLoginParams(state,obj){
 			state.loginParams = obj
 		},

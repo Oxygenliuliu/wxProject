@@ -1,0 +1,8 @@
+{
+  "navigationBarTitleText": "登录",
+  "navigationStyle": "custom",
+  "usingComponents": {
+    "copyright": "/components/customize/copyright",
+    "uni-icons": "/components/uni-icon/uni-icons"
+  }
+}

@@ -275,26 +275,26 @@
           align-items: center;
 }
 .login .loginImg {
-    width: 100px;
-    height: 100px;
-    border: 2px solid #b0d3fd;
-    border-radius: 50%;
-    text-align: center;
+  width: 100px;
+  height: 100px;
+  border: 2px solid #b0d3fd;
+  border-radius: 50%;
+  text-align: center;
 }
 .login .loginImg .login-head {
-      width: 90px;
-      height: 90px;
-      border: 1px solid #b0d3fd;
-      border-radius: 50%;
-      margin-left: 4px;
-      margin-top: 4px;
-      text-align: center;
+  width: 90px;
+  height: 90px;
+  border: 1px solid #b0d3fd;
+  border-radius: 50%;
+  margin-left: 4px;
+  margin-top: 4px;
+  text-align: center;
 }
 .login .loginImg .login-head image {
-        width: 100%;
-        height: 100%;
-        border-radius: 50%;
-        overflow: hidden;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  overflow: hidden;
 }
 .login-name {
   width: 100%;
@@ -324,47 +324,47 @@
   margin-top: 40px;
 }
 .login-center .login-key {
-    width: 90%;
-    height: 30px;
-    border-bottom: 1px solid #ddd;
-    display: -webkit-box;
-    display: -webkit-flex;
-    display: flex;
+  width: 90%;
+  height: 30px;
+  border-bottom: 1px solid #ddd;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: flex;
 }
 .login-center .login-key .loginkey-top {
-      width: 90%;
-      display: -webkit-box;
-      display: -webkit-flex;
-      display: flex;
+  width: 90%;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: flex;
 }
 .login-center .login-key .loginkey-top ._i {
-        width: 10%;
-        position: absolute;
-        left: 20px;
-        margin-top: 5px;
+  width: 10%;
+  position: absolute;
+  left: 20px;
+  margin-top: 5px;
 }
 .login-center .login-key .loginkey-top input {
-        width: 80%;
-        position: relative;
-        left: 30px;
-        font-size: 0.7rem;
-        margin-top: 5px;
+  width: 80%;
+  position: relative;
+  left: 30px;
+  font-size: 0.7rem;
+  margin-top: 5px;
 }
 .login-center .login-key .loginkey-top .uni-icons {
-        width: 10%;
-        position: relative;
-        left: 50px;
-        color: red;
+  width: 10%;
+  position: relative;
+  left: 50px;
+  color: red;
 }
 .login-center .login-btn {
-    width: 90%;
-    height: 40px;
-    background-color: #4A8DD6;
-    color: #FFF;
-    text-align: center;
-    line-height: 40px;
-    border-radius: 5px;
-    font-size: 18px;
+  width: 90%;
+  height: 40px;
+  background-color: #4A8DD6;
+  color: #FFF;
+  text-align: center;
+  line-height: 40px;
+  border-radius: 5px;
+  font-size: 18px;
 }
 .login-account {
   display: -webkit-box;
@@ -374,11 +374,11 @@
   font-size: 32rpx;
 }
 .login-account .current {
-    width: 25%;
-    color: #2f14c5;
+  width: 25%;
+  color: #2f14c5;
 }
 .login-account .account {
-    color: #2f14c5;
+  color: #2f14c5;
 }
 .login-footer {
   width: 100%;
@@ -386,29 +386,29 @@
   margin-top: 10px;
 }
 .login-footer .login-senior {
-    display: -webkit-box;
-    display: -webkit-flex;
-    display: flex;
-    -webkit-box-pack: center;
-    -webkit-justify-content: center;
-            justify-content: center;
-    -webkit-box-align: center;
-    -webkit-align-items: center;
-            align-items: center;
-    color: rgba(34, 34, 34, 0.8);
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: flex;
+  -webkit-box-pack: center;
+  -webkit-justify-content: center;
+          justify-content: center;
+  -webkit-box-align: center;
+  -webkit-align-items: center;
+          align-items: center;
+  color: rgba(34, 34, 34, 0.8);
 }
 .login-footer .login-senior button {
-      width: 90px;
-      min-width: 60px;
-      font-size: .7rem;
-      color: #666;
-      padding: 0.3vw 2vw;
-      border-radius: 25px;
-      border: 1px solid #ccc;
-      background: #fff !important;
-      margin: 0 5px;
+  width: 90px;
+  min-width: 60px;
+  font-size: .7rem;
+  color: #666;
+  padding: 0.3vw 2vw;
+  border-radius: 25px;
+  border: 1px solid #ccc;
+  background: #fff !important;
+  margin: 0 5px;
 }
 .login-footer .login-senior button:after {
-      display: none;
+  display: none;
 }
 

@@ -66,6 +66,11 @@
 					uni.showToast({title: '新密码格式不对，密码至少6位数',icon:"none"});
 					return false; 
 				}
+				let storageData = JSON.parse(uni.getStorageSync('userInfo'));
+				if(this.oldpasswd != storageData.userPassword){
+					uni.showToast({title: '原始密码不正确',icon:"none"});
+					return false; 
+				}
 				let params = {
 					Mode: 0,
 					NewPassWord: this.newpasswd
@@ -74,7 +79,10 @@
 				if(data!='worng'){
 					if(data.status == 0){
 						this.$store.commit('changeUserPassword',this.newpasswd);
-						uni.navigateTo({url: '../../pages/index/login'})
+						uni.showToast({title: '修改密码成功,请重新登录',icon: 'success',duration:1000})
+						setTimeout(()=>{
+							uni.navigateTo({url: '../../pages/index/login'})
+						},1000)
 					}else{
 						uni.showToast({title: data.message,icon: 'none'})
 					}
@@ -84,11 +92,14 @@
 				uni.showLoading({title: '密码修改中...'})
 				return new Promise((resolve,reject)=>{
 					uni.request({
-						url: this.url + '/public/common',
-						method: 'GET',
+						//url: this.url + '/public/common',
+						url: this.url + '/transit_server',
+						//method: 'GET',
+						method: 'POST',
 						data:{
+							interface_add: 'http://122.114.123.189:7798/public/common',
 							token: this.token,
-							params: params
+							params: JSON.stringify(params)
 						},
 						success: (res) => {
 							resolve(res.data)
@@ -120,7 +131,7 @@
 					return ''
 				}
 			}
-		}
+		},
 	}
 </script>
 

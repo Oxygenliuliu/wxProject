@@ -98,9 +98,12 @@
 			getAccountset(){// 获取账套
 				uni.showLoading({title: '加载中...'})
 				uni.request({
-					url: this.url + '/cs/serverinfo',
-					method: 'GET',
+					//url: this.url + '/cs/serverinfo',
+					url: this.url + '/transit_server',
+					method: 'POST',
+					//method: 'GET',
 					data: {
+						interface_add: 'http://122.114.123.189:7798/cs/serverinfo',
 						type: 1,
 					},
 					success: (res) => {
@@ -152,7 +155,8 @@
 				let domin = this.domain.replace(/ /g,'');
 				let port = this.port.replace(/ /g,'');
 				if(domin!='' &&port!=''){
-					let url = 'http://'+domin+':'+port;
+					//let url = 'http://'+domin+':'+port;
+					let url = 'https://'+domin;
 					this.$store.commit('changeUrl',url)
 				}
 				if(dbname!=''){
