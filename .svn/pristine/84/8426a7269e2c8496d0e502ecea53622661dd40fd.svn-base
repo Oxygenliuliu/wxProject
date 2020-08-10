@@ -1,0 +1,66 @@
+import permision from "@/common/js/permission.js";// 扫码
+let ownScan = async function(){
+	let scanData = await scan();
+	return scanData;
+}
+
+let scan = async function () {
+	// #ifdef APP-PLUS
+	let status =await checkPermission();
+	if (status !== 1) {
+		return;
+	}
+	// #endif
+	const scanData = new Promise((resolv, reject)  => {
+		uni.scanCode({
+			success: (res) => {
+			//扫码拿到返回值处理逻辑
+			 resolv(JSON.parse(res.result))
+				},
+				fail: (err) => {
+					// #ifdef MP
+					uni.getSetting({
+					success: (res) => {
+					let authStatus = res.authSetting['scope.camera'];
+					if (!authStatus) {
+						uni.showModal({
+							title: '授权失败',
+							content: 'Hello uni-app需要使用您的相机，请在设置界面打开相关权限',
+							success: (res) => {
+								if (res.confirm) {
+									uni.openSetting()
+										}
+									},
+								})
+							}
+									},
+								})
+					// #endif
+						}
+					});
+	})
+	 return scanData;
+			}
+// #ifdef APP-PLUS
+let checkPermission =async function(code) {
+	let status = permision.isIOS ?await permision.requestIOS('camera') :
+		await permision.requestAndroid('android.permission.CAMERA');
+	if (status === null || status === 1) {
+		status = 1;
+		} else {
+		uni.showModal({
+			content: "需要相机权限",
+			confirmText: "设置",
+			success: function(res) {
+				if (res.confirm) {
+					permision.gotoAppSetting();
+						}
+					}
+					})
+				}
+				return status;
+		}
+// #endif
+export default{
+	ownScan,
+}

@@ -1,0 +1,353 @@
+<template>
+	<view  :style="{height:(height)+'px'}">
+		<view class="login">
+			<view class="loginImg">
+				<view class="login-head">
+					<image src="../../static/fumou-center-template/header.jpg" mode=""></image>
+					
+				</view>
+			</view>
+		</view>
+		<view class="login-name">飞扬动力小程序(客户版)</view>
+		<view class="floatUp">
+			<view class="login-center">
+				<view class="login-key">
+					<view class="loginkey-top">
+						<i class="iconfont iconcharacter"></i>
+						<input type="text" class="txt-input changeInput" name="phoneName" placeholder="请输入账号/手机号" v-model="name">
+					</view>
+				</view>
+			</view>
+			<view class="login-center">
+				<view class="login-key">
+					<view class="loginkey-top">
+						<i class="iconfont iconmima"></i>
+						<input type="password" class="txt-input changeInput" name="phonePwd" placeholder="请输入密码" v-model="password" >
+					</view>
+				</view>
+			</view>
+			<view class="login-center">
+				<view class="login-btn" @tap="loginBtn">登 录</view>
+			</view>
+			<view class="login-account">
+				<view class="current">当前账套：</view><view class="account">{{loginNumber}}</view>
+			</view>
+			<view class="login-footer">
+				<view class="login-senior">
+					<button type="primary" @tap="toPage">高级设置</button>
+				</view>
+			</view>
+		</view>
+		<copyright></copyright>
+	</view>
+</template>
+
+<script>
+	import copyright from "@/components/customize/copyright.vue";
+	import uniIcons from '@/components/uni-icon/uni-icons.vue'
+	export default{
+		components:{
+			copyright,uniIcons
+		},
+		data(){
+			return{
+				height:'',
+				already: false,  //当前是否处于登录状态
+				listBoxStyle: `height: 40px; font-size: 16px;`,
+				name: '',
+				password: '',
+				isBtn: false,
+			}
+		},
+		onLoad(options){
+			uni.getSystemInfo({
+			    success:(res)=> {
+					this.height = res.windowHeight;
+			    }
+			});
+		},
+		methods:{
+			// 高级设置
+			toPage(){
+				uni.hideKeyboard();
+				uni.navigateTo({
+					url: './senior'
+				})
+			},
+			someInit(){
+				if(this.loginName)this.name = this.loginName
+				if(this.loginPwd)this.password = this.loginPwd
+			},
+			// 点击登录按钮触发事件
+			async loginBtn(){
+				if(this.isBtn)return
+				let userName = this.name.replace(/ /g,'');
+				let userPassword = this.password.replace(/ /g,'');
+				let dbname = this.loginNumber;
+				if(dbname == ''){
+					uni.showToast({title: '账套名不能为空,请前往高级设置中添加',icon: 'none'});
+					return 
+				}else if(this.url == ''){
+					uni.showToast({title: '服务器地址不能为空,请前往高级设置中添加',icon: 'none'});
+					return
+				}else if(userName == ''){
+					uni.showToast({title: '用户名不能为空',icon: 'none'});
+					return
+				}else if(userPassword == ''){
+					uni.showToast({title: '密码不能为空',icon: 'none'});
+					return
+				}else if(!RegExp(/^.{6,}$/).test(userPassword)){
+					uni.showToast({title: '密码至少6位数',icon:"none"});
+					return
+				}
+				this.isBtn = true;
+				let data = await this.wrquest(userName,userPassword,dbname).catch(()=>{return 'worng'});
+				if(data!='wrong'){
+					if(data.status == 0){
+						let obj = {
+							name: userName,
+							password: userPassword
+						}
+						//更改vuex中用户信息
+						this.$store.commit('changeUserIfno',obj);
+						let obj1 = {
+							personName: data.UserName,
+							personId: data.UserId,
+							}
+						//更改vuex客户信息
+						this.$store.commit('changePersonInfo',obj1);						//
+						//更改storage中userInfo的值
+						let dataOfStorage = JSON.parse(uni.getStorageSync('userInfo'));
+						dataOfStorage.userName = userName;
+						dataOfStorage.userPassword = userPassword;
+						dataOfStorage.personName = data.userName;
+						dataOfStorage.personId = data.UserId;
+						uni.setStorageSync('userInfo',JSON.stringify(dataOfStorage));
+						//更改storage中token的值
+						let token = data.token;
+						uni.setStorageSync('token',token);
+						this.$store.commit('changeLoginToken',token);
+						let pages = getCurrentPages();
+						let page = 
+						// #ifdef H5
+						pages[pages.length - 2];
+						// #endif
+						// #ifndef H5
+						pages[pages.length - 2];
+						// #endif
+						if(page){
+							if(page.route == 'pages/index/index'){
+								uni.$emit('update')
+								uni.switchTab({
+									url: '../../pages/index/index'
+								})
+							}
+						}else{
+							uni.switchTab({
+								url: '../../pages/index/index'
+							})
+						}
+					}else{
+						uni.showToast({title: data.message,icon: 'none'})
+					}
+				}else{
+					uni.showToast({title: '登录失败稍后重试',icon: 'none'})
+				}
+				this.isBtn = false
+			},
+			wrquest(name,password,dbname){
+				uni.showLoading({title: '登录中...'})
+				return new Promise((resolve,reject)=>{
+					uni.request({
+						//url: this.url + '/public/login',
+						url: this.url + '/transit_server',
+						method: 'POST',
+						//method: 'GET',
+						data:{
+							interface_add: 'http://122.114.123.189:7798/public/login',
+							username: name,
+							password: password,
+							dbname: dbname
+						},
+						success: (res) => {
+							resolve(res.data)
+						},
+						fail: (res) => {
+							reject()
+						},
+						complete: () => {
+							uni.hideLoading()
+						}
+					})
+				})
+			},
+		},
+		created() {
+		},
+		computed:{
+			loginNumber: { //账套名
+				get:function(){
+					return this.$store.state.loginParams.dbname
+				},
+				set:function(){
+					return ''
+				}
+			},
+			url: { //服务器地址
+				get:function(){
+					return this.$store.state.loginParams.url
+				},
+				set:function(){
+					return ''
+				}
+			},
+			loginName: { //用户名
+				get:function(){
+					return this.$store.state.loginParams.userName
+				},
+				set:function(){
+					return ''
+				}
+			},
+			loginPwd: { //用户密码
+				get:function(){
+					return this.$store.state.loginParams.userPassword
+				},
+				set:function(){
+					return ''
+				}
+			}
+		}
+	}
+</script>
+
+<style lang="scss">
+	@import "uni.scss";
+	@import "../../common/css/iconfont.css";
+	.login{
+		width: 100%;
+		height: 24%;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		.loginImg{
+			width: 100px;
+			height: 100px;
+			border: 2px solid #b0d3fd;
+			border-radius: 50%;
+			text-align: center;
+			.login-head{
+				width: 90px;
+				height: 90px;
+				border: 1px solid #b0d3fd;
+				border-radius: 50%;
+				margin-left: 4px;
+				margin-top: 4px;
+				text-align: center;
+				image{
+					width: 100%;
+					height: 100%;
+					border-radius: 50%;
+					overflow: hidden;
+				}
+			}
+		}
+	}
+	.login-name{
+		width: 100%;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		color: $font-color2;
+		font-size: 0.7rem;
+	}
+	.login-center{
+		width: 100%;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		margin-top: 40px;
+		.login-key{
+			width: 90%;
+			height: 30px;
+			border-bottom: 1px solid #ddd;
+			display: flex;
+			.loginkey-top{
+				width: 90%;
+				display: flex;
+				i{
+					width: 10%;
+					position: absolute;
+					left: 20px;
+					margin-top: 5px;
+					/* #ifdef APP-PLUS */
+					margin-top: 8px;
+					/* #endif */
+				}
+				input{
+					width: 80%;
+					position: relative;
+					left: 30px;
+					font-size: 0.7rem;
+					margin-top: 5px;
+				}
+				.uni-icons{
+					width: 10%;
+					position: relative;
+					left: 50px;
+					color: red;
+				}
+			}
+		}
+		.login-btn{
+			width: 90%;
+			height: 40px;
+			background-color: #4A8DD6;
+			color: #FFF;
+			text-align: center;
+			line-height: 40px;
+			border-radius: 5px;
+			font-size: 18px;
+			/* #ifdef APP-PLUS */
+			font-size: 14px;
+			/* #endif */
+		}		
+	}
+	.login-account{
+		display: flex;
+		padding: 20px;
+		font-size: 32rpx;
+		.current{
+			width: 25%;
+			color: #2f14c5;
+		}
+		.account{
+			color: #2f14c5;
+		}
+	}
+	.login-footer{
+		width: 100%;
+		text-align: center;
+		margin-top: 10px;
+		.login-senior{
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			color: rgba(34, 34, 34, 0.8);
+			button{
+				width: 90px;
+				min-width: 60px;
+				font-size: .7rem;
+				color: #666;
+				padding: 0.3vw 2vw;
+				border-radius: 25px;
+				border: 1px solid #ccc;
+				background: #fff!important;
+				margin: 0 5px;
+			}	
+			button:after{
+				display: none;
+			}
+		}
+	}
+</style>

@@ -1,6 +1,9 @@
 {
   "pages": [
     "pages/index/index",
+    "pages/index/payment",
+    "pages/order/payresult",
+    "pages/order/scanOrder",
     "pages/index/login",
     "pages/index/senior",
     "pages/index/user",
@@ -33,5 +36,9 @@
       }
     ]
   },
-  "usingComponents": {}
+  "networkTimeout": {
+    "request": 3000
+  },
+  "usingComponents": {},
+  "sitemapLocation": "sitemap7.json"
 }

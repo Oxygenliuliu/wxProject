@@ -1,0 +1,69 @@
+{
+	"pages": [ //pages数组中第一项表示应用启动页，参考：https://uniapp.dcloud.io/collocation/pages
+		{
+			"path": "pages/index/index",
+			"style": {
+				"navigationBarTitleText": "我的订单",
+				"enablePullDownRefresh": true // 下拉刷新
+			}
+		},
+		{
+			"path": "pages/index/payment",
+			"style": {
+				"navigationBarTitleText": "订单支付",
+				"enablePullDownRefresh": true // 下拉刷新
+			}
+		},
+		{
+			"path": "pages/index/login",
+			"style": {
+				"navigationBarTitleText": "登录",
+				"navigationStyle":"custom"
+			}
+		},
+		{
+			"path": "pages/index/senior",
+			"style": {
+				"navigationBarTitleText": "高级设置"
+			}
+		},
+		{
+			"path": "pages/index/user",
+			"style": {
+				"navigationBarTitleText": "个人中心"
+			}
+		},
+		{
+			"path": "pages/index/updataPassword",
+			"style": {
+				"navigationBarTitleText": "修改密码"
+			}
+		}
+	],
+	"globalStyle": {
+		"navigationBarTextStyle": "black",
+		"navigationBarTitleText": "飞扬动力客户版",
+		"navigationBarBackgroundColor": "#F8F8F8",
+		"backgroundColor": "#F8F8F8"
+	},
+	"tabBar": {
+		"color": "#7A7E83",
+		"selectedColor": "#3cc51f",
+		"borderStyle": "black",
+		"backgroundColor": "#ffffff",
+		"list": [
+			{
+			"pagePath": "pages/index/index",
+			"iconPath": "static/pngs/dd.png",
+			"selectedIconPath": "static/pngs/dd1.png",
+			"text": "订单"
+			},
+			{
+			"pagePath": "pages/index/user",
+			"iconPath": "static/pngs/grzx.png",
+			"selectedIconPath": "static/pngs/grzx1.png",
+			"text": "个人中心"
+			}
+		]
+	}
+}

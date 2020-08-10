@@ -1,0 +1,341 @@
+<template>
+	<view class="container">
+		<view class="header" v-if="pageSettlement != -1">
+			<view class="title">
+				<view class="person">客户: {{companyName}}</view>
+				<view class="scan" @tap="scan()"><span class='iconfont iconsaoma'></span></view>
+			</view>
+		</view>
+		<view v-if="pageSettlement != -1">
+			<often-query :items='topItems' @dataChange='childQuery' v-if="pageSettlement != 0"></often-query>
+		</view>
+		<uni-order @getCompanyName='getCompanyName' :dbname='dbname' @changeScrollHeight='changeScrollHeight' :orderId='orderId' :fparams='params' :scrollHeight="scrollHeight" ref='uniOrder' v-if="pageSettlement != -1"></uni-order>
+	</view> 
+</template>
+<script>
+	import ownScan from "@/common/js/scan.js"
+	import uniOrder from '@/components/uni-order/uniOrder.vue'
+	import oftenQuery from '@/components/uni-often/uni-often.vue'
+	export default {
+		components: {
+			uniOrder,
+			oftenQuery
+		},
+		data() {
+			return {
+				searchData:'',//搜索值
+				scrollHeight: 0,//滚动区域高度
+				topItems:[ //顶部筛选传入值typeId唯一标识
+					{
+						name:'综合排序',
+						typeId:101
+					},
+					{
+						name:'日期',
+						typeId:102
+					},
+				],
+				chooseData:{data1:[],data2:[]},//传入子组件的筛选条件
+				orderId: '',
+				params: {},
+				pageSettlement: 2,//-1错误 1对账 2收款 3开单 4扫码
+				costScrollHeight:'',
+				dbname: '',
+				optionsData: '',//存储分享进来的数据
+			}
+		},
+		onLoad(options){
+			uni.getSystemInfo({
+				success:(res)=>{
+					/* 设置当前滚动容器的高，若非窗口的高度，请自行修改 */
+					// #ifdef H5
+					this.scrollHeight = res.windowHeight - 50 - 70 - 31 - res.statusBarHeight + 'px';
+					// #endif
+					// #ifndef H5
+					this.scrollHeight = res.windowHeight - 50 - 40 - 31 + 'px';
+					// #endif
+				}
+			});
+			this.costScrollHeight = this.scrollHeight;
+			let token = uni.getStorageSync('token');
+			this.optionsData = {
+				q:options
+			};
+			if(token){
+				this.loginThenJquery();
+			}else{
+				uni.navigateTo({
+					url: '../../pages/index/login'
+				})
+			}
+		},
+		methods: {
+			loginThenJquery(){ //登录之后在执行查询
+				let options = this.optionsData.q;
+				let obj = {};
+				let letparsonId = JSON.parse(uni.getStorageSync('userInfo')).personId;
+				if(options.data != undefined){
+					obj = JSON.parse(options.data);
+					if(typeof obj == 'object'){
+						if(obj.params.PartnerId == letparsonId){
+							if(obj.type == 1 || obj.type == 2){//1对账 2收款3、开单4、扫码
+								this.params = {//搜索条件
+									QUERY_ID: 1,
+									BEGINDATE: obj.params.BEGINDATE || '1900-01-01',
+									ENDDATE: obj.params.ENDDATE || this.wpublic.getDay(1),//日期引用公共方法
+									PartnerId: obj.params.PartnerId || '',
+									Status: obj.params.STATUS || 0,
+									PAGE_SIZE: 8,
+									PAGE_INDEX: 0,
+								}
+								this.$nextTick(function(){
+									this.$refs.uniOrder.jqueyForCustomer();
+								})
+							}
+						}else{
+							this.pageSettlement = 1;
+							uni.showToast({title: '不是您的专属分享链接,3秒后为您自动查询',icon: 'none',duration: 3000})
+							this.params = {//搜索条件
+								QUERY_ID: 1,
+								BEGINDATE: '1900-01-01',
+								ENDDATE: this.wpublic.getDay(1),//日期引用公共方法
+								PartnerId: letparsonId,
+								Status: 0,
+								PAGE_SIZE: 8,
+								PAGE_INDEX: 0,
+							}
+							setTimeout(()=>{
+								this.$refs.uniOrder.jqueyForCustomer();
+							},3000)
+						}
+					}else{
+						this.pageSettlement = 1;
+						uni.showToast({title: '参数错误',icon: 'none',duration: 3000})
+					}
+				}else{
+					if(letparsonId != ''){
+						this.params = {//搜索条件
+							QUERY_ID: 1,
+							BEGINDATE:'1900-01-01',
+							ENDDATE: this.wpublic.getDay(1),//日期引用公共方法
+							PartnerId: letparsonId,
+							Status: 0,
+							PAGE_SIZE: 8,
+							PAGE_INDEX: 0,
+						}
+						setTimeout(()=>{
+							this.$refs.uniOrder.jqueyForCustomer();
+						},3000)
+					}else{
+						this.pageSettlement = -1;
+						this.data = '用户ID错误或不存在' + letparsonId
+					}
+				}
+			},
+			changeScrollHeight(obj){//更改滚动条长度
+				let num = this.scrollHeight.replace('px','');
+				this.scrollHeight = obj.type?parseInt(num) - obj.height + 'px': this.costScrollHeight;
+			},
+			showDrawer(){ //侧栏展示
+				this.$refs.morequery.show()
+			},
+			clickSure(data){ // 传入订单组件侧栏筛选数据
+				let arr = [];
+				data.forEach(i=>{
+					if(Object.keys(i.cont).length != 0){
+						arr.push(i)
+					}
+				})
+				this.chooseData.data2 = arr;
+				this.$refs.uniOrder.changeScreen(this.chooseData)
+			},
+			childQuery(data){ //传入订单组件的顶部筛选条件
+				let arr = [];
+				data.forEach((i,j)=>{
+					if(j != 1){
+						if(i.cont != ''){
+							arr.push(i)
+						}
+					}else{
+						if(Object.keys(i.times).length!= 0 || i.cont != ''){//对本周一个月进行日期转换
+							let numDay = 0;
+							let statrTime = '';
+							if(i.cont != ''){
+								if(i.cont == '本周'){//当选择本周时进行周几判断并且拿回日期
+									var str= '0123456'.charAt(new Date().getDay());
+									statrTime = this.wpublic.getDayFor(str);
+								}
+								else{
+									switch (i.cont){
+										case '今天':
+											numDay = 0;
+											break;
+										case '7天':
+											numDay = -7;
+											break;
+										case '30天':
+											numDay = -30;
+											break;
+										default:
+											break;
+									}
+								statrTime = this.wpublic.getDay(numDay);
+								}
+								i.times['statrTime'] =  statrTime;
+								i.times['endTime'] =new Date().toISOString().slice(0, 10);
+							}
+							arr.push(i)
+						}
+					}
+				})
+				this.chooseData.data1 = arr;
+				this.$refs.uniOrder.changeScreen(this.chooseData)
+			},
+			someInit(){ //初始化
+				let data = uni.getStorageSync('userInfo');
+				let personName = uni.getStorageSync('personName');
+				if(data){
+					data = JSON.parse(data);
+					if(data.userName==''||data.userPassword==''){
+						uni.navigateTo({
+							url: '../../pages/index/login'
+						})
+					}else{
+						let token = uni.getStorageSync('token') || ''
+						let obj = {
+							userName: data.userName,
+							userPassword: data.userPassword,
+							dbname: data.dbname || '',
+							url: data.url,
+							personName: personName,
+							personId: data.personId,
+							port: data.port || 7798
+						}
+						this.$store.commit('changeLoginParams',obj);
+						this.$store.commit('changeLoginToken',token);
+					}
+				}else{
+					uni.navigateTo({
+						url: '../../pages/index/login'
+					})
+				}
+			},
+			async scan(){
+				let data = await ownScan.ownScan();
+				let flag = this.isResult(data);
+				if(flag){
+					uni.showToast({title: '不是咱家二维码哟',icon: 'none'});
+					return
+				}
+				uni.navigateTo({
+					url: '../../pages/order/scanOrder?data=' + JSON.stringify(data)
+				})
+				/* let mod = data.type == 4?0:1;
+				let data = {type: 3,params:{QUERY_ID: 2,MODE: 0,BILL_ID: "182804226769719296",PartnerId: '1757112'}};
+				this.params = {//搜索条件
+					QUERY_ID: 2,
+					MODE: mod,
+					BILL_ID: data.params.SessionId
+				} */ 
+			},
+			isResult(data){
+				let flag = true;
+				if((typeof data) == 'object'){
+					if(data.type == 4){
+						if(data.params){
+							if(data.params.hasOwnProperty('PartnerId') && data.params.hasOwnProperty('SessionId')){
+								flag = false;
+							}
+						}
+					}
+				}
+				return flag;
+			},
+			pullRefresh(){ //刷新方法
+				this.$refs.uniOrder.pullRefresh()
+			},
+		},
+		async onPullDownRefresh() {
+			await this.$refs.uniOrder.pullRefresh();
+			uni.stopPullDownRefresh()
+		},
+		created() {
+			this.someInit();
+			uni.$on('update',()=>{
+				this.loginThenJquery()
+			})
+			// let obj = {
+			// 	type: 4,
+			// 	params:{
+			// 		PartnerId: '1757112',
+			// 		SessionId: '1839044'
+			// 	}
+			// }
+		},
+		computed:{
+			companyName: {
+				get: function(){
+					return this.$store.state.loginParams.personName
+				},
+				set: function(){
+					return '未知用户'
+				}
+			}
+		},
+	}
+</script>
+
+<style lang="scss" scoped>
+	@import "../../common/css/iconfont.css";
+	@import  "../../common/css/common.scss";
+	
+	.header{
+		display: flex;
+		justify-content: space-between;
+		line-height: 100rpx;
+		height: 100rpx;
+		padding: 0 2.5%;
+		background: rgb(60, 179, 113);
+		color: $white;
+		.title{
+			display: flex;
+			justify-content: space-between;
+			width: 100%;
+			.person{}
+			.scan{
+				padding: 20rpx;
+				display: flex;
+				justify-content: center;
+				align-items: center;
+				.iconsaoma{
+					font-size: 40rpx;
+					font-weight: 600;
+				}
+			}
+		}
+	}
+</style>
+<!-- <template>
+	<view class="container">
+	</view> 
+</template>
+<script>
+	export default {
+		created() {
+			let token = uni.getStorageSync('token');
+			if(token){
+				uni.navigateTo({
+					url: '../pages/index/login'
+				})
+			}else{
+				uni.navigateTo({
+					url: '../pages/index/order'
+				})
+			}
+		}
+	}
+</script>
+
+<style lang="scss" scoped>
+
+</style> -->

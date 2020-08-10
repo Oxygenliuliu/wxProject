@@ -1,4 +1,6 @@
 {
-  "usingComponents": {},
-  "component": true
+  "component": true,
+  "usingComponents": {
+    "l-loading": "/components/uni-lloading/l_loading"
+  }
 }

@@ -1,0 +1,145 @@
+const deepClone = function(obj) { //深拷贝
+	const isObject = args => (typeof args === 'object' || typeof args === 'function') && typeof args !== null
+	if (!isObject) throw new Error('Not Reference Types')
+	let newObj = Array.isArray(obj) ? [...obj] : { ...obj }
+	Reflect.ownKeys(newObj).map(key => {
+	newObj[key] = isObject(obj[key]) ? deepClone(obj[key]) : obj[key]
+	})
+	return newObj
+}
+const getDay = function(day){//获取几天前的日期
+    var today = new Date();
+    var targetday_milliseconds=today.getTime() + 1000*60*60*24*day;
+    today.setTime(targetday_milliseconds); //注意，这行是关键代码
+    var tYear = today.getFullYear();
+    var tMonth = today.getMonth();
+    var tDate = today.getDate();
+    tMonth = doHandleMonth(tMonth + 1);
+    tDate = doHandleMonth(tDate);
+    return tYear+"-"+tMonth+"-"+tDate;
+}
+const getDayFor = function(day){//获取星期日期
+	switch (day){
+		case '0':
+		return getDay(-7)
+			break;
+		case '1':
+		return getDay(-1)
+			break;
+		case '2':
+		return getDay(-2)
+			break;
+		case '3':
+		return getDay(-3)
+			break;
+		case '4':
+		return getDay(-4)
+			break;
+		case '5':
+		return getDay(-5)
+			break;
+		case '6':
+		return getDay(-6)
+			break;
+		default:
+			break;
+	}
+}
+const doHandleMonth = function(month){
+    var m = month;
+    if(month.toString().length == 1){
+     m = "0" + month;
+    }
+    return m;
+}
+const computeAverage = function(arr){
+	if(arr.length == 0 || !(arr instanceof Array))return
+	let arrLenght = arr.length;
+	let averageNum = (100 / arrLenght).toFixed(1);
+	arr.forEach((i,j)=>{
+		if((j+1)!=arrLenght){
+			i.CompletedRate = averageNum;
+		}else{
+			i.CompletedRate = (100 - averageNum*10*(arrLenght-1)/10).toFixed(1);
+		}
+	})
+	return arr;
+}
+const numRule = function(num,len = 9,fixedNum = 2){ // 数字 最大长度 保留小数位数
+	let nums = parseFloat(num);
+	let spotB = Math.floor(nums);
+	if(spotB.toString().length >=len)return 1;
+	nums = nums.toFixed(fixedNum);
+	return nums;
+}
+const scanProc = function(StepId,StepName){
+	let data = uni.getStorageSync('loginData'),
+	token = uni.getStorageSync('token'),
+	baseUrl=uni.getStorageSync('domain')
+	if(!token){
+		uni.showToast({
+			title:'token不存在，请检查是否登陆'
+		})
+		return false
+	}
+	if(!data.UserId || !data.username){
+		uni.showToast({
+			title:'用户信息不存在，请检查是否登陆'
+		})
+		return false
+	}
+	if(!baseUrl){
+		uni.showToast({
+			title:'服务器域名不存在，请检查是否登陆'
+		})
+		return false
+	}
+	data.token = token
+	data.baseUrl = baseUrl
+	data.StepId = StepId
+	uni.navigateTo({
+		url: '/pages/order/barcode?flag=1&token='+data.token+'&UserId='+data.UserId+'&username='+data.username+'&StepId='+data.StepId+'&baseUrl='+data.baseUrl+'&StepName='+StepName
+	});
+}
+const scanImport = function(){
+	let token = uni.getStorageSync('token'),
+	baseUrl=uni.getStorageSync('domain')
+	if(!token){
+		uni.showToast({
+			title:'token不存在，请检查是否登陆'
+		})
+		return false
+	}
+	if(!baseUrl){
+		uni.showToast({
+			title:'服务器域名不存在，请检查是否登陆'
+		})
+		return false
+	}
+	uni.navigateTo({
+		url: '/pages/order/barcode?flag=0&token='+token+'&baseUrl='+baseUrl
+	});
+}
+const MakeFilePathStr = function(dbName){
+	let pattern=/[`~!@#$^&*()=|{}';',\\\[\]\.<>\/?~！@#￥……&*（）——|{}【】'；""'。，、？\s]/g;
+	let pattern1=/[:：\s]/g;
+	return dbName.replace(pattern,"").replace(pattern1,".")
+}
+const getImgUrl = function(BILLDETAIL_ID){
+	let data = JSON.parse(uni.getStorageSync('userInfo'));
+	let domin ='http://' + data.url + ':7798/';
+	//let index = domin.lastIndexOf(':');
+	//let domin = str.substr(0,index + 1);
+	let dbname = data.dbname;
+	return domin + dbname + '/' + BILLDETAIL_ID + '.jpg';
+}
+export default{
+	deepClone,
+	getDay,
+	getDayFor,
+	computeAverage,
+	numRule,
+	scanProc,
+	scanImport,
+	getImgUrl
+}

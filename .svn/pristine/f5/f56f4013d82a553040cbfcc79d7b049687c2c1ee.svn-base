@@ -1,0 +1,900 @@
+<template>
+	<view class="con-conent">
+		<view class="type" v-if="pageSettlement != 0">
+			<block v-for="(item,index) in tabBars" :key='index'>
+				<view class="type-box" :data-current="index" @tap='ontabtap' :class="{'active-box':item.isTrue}">{{item.name}}</view>
+			</block>
+		</view>
+		<swiper class="swiper-box" :current='tabIndex' :duration="300"  :style="{ 'height':scrollHeight }" @change="ontabchange">
+			<swiper-item v-for="(tab,index1) in newsList" :key='index1'>
+				<view class="dailycashlist" v-if="dailyList.length != 0">
+					<scroll-view  scroll-y="true" @scrolltolower='refresh()' :style="{ 'height':scrollHeight }" scroll-with-animation="true">
+						<view class="daily-list1" v-for="(it,index) in dailyList" :key="index">
+							<view class="daily-head" style="padding: 20rpx 0;">
+								<view class="flex-box">
+									<view class="is-true" :style="tabIndex == 2?'':'display: none;'">
+										<label @tap='changeCheckStatu(it.BILL_CODE)' v-show="pageSettlement!=0">
+											<checkbox :checked="it.isTrue" ></checkbox>
+										</label>
+									</view>
+									<view class="title-box">
+										<view class="daily-time">开单日期: {{it.BILL_DATE_STR}}</view>
+										<view class="daily-time">单号: {{it.BILL_CODE}}</view>
+										<view class="daily-time warning" style="padding-bottom: 20rpx;">未结金额: {{it.BILL_LEFTMONEY|priceFormat(2,'￥',true)}}</view>
+									</view>
+								</view>
+								<view class="chekc-btn">
+									<view class="daily-status">
+										<view>
+											<span class='text over' v-show='it.BILL_STATUS == 0'>待登账</span>
+											<span class='text over' v-show='it.BILL_STATUS == 1'>已登账</span>
+											<span class='text warning' v-show='it.BILL_STATUS == 2'>已红冲</span>
+										</view>
+										<view class="form-where">
+											<view class="tag" v-show="it.BILL_PLATFORM==0"><span class='iconfont iconpc'></span></view>
+											<view class="tag"  v-show="it.BILL_PLATFORM==1"><span class='iconfont iconapp'></span></view>
+											<view class="tag"  v-show="it.BILL_PLATFORM==2"><span class='iconfont iconshouji'></span></view>
+										</view>
+										<view class="display-more" @tap='displayMore(it.BILL_ID)'>
+											<view class="tag" :class="{'icondown':!it.isShow}"><span class='iconfont icontop'></span></view>
+										</view>
+									</view>
+								</view>
+							</view>
+							<view class="daily-conent" v-if="it.isShow"><!-- 明细详情 -->
+								<view class="daily-list" v-for="(item,index) in it.child" :key="index">
+									<view class="daily-listinfo">
+										<view class="daily-img">
+										</view>
+										<view class="daily-coninfo">
+											<view class="daily-coninfoone">
+												<view class="daily-conleft w-text-over">材料：{{item.BILLDETAIL_GOODSNAME||'空'}}</view> <view class="daily-listprice w-text-over">{{item.BILLDETAIL_PRICE|priceFormat(2,'￥',true)}}</view>
+											</view>
+											<view class="daily-coninfoone">
+												<view class="daily-conleft">尺寸：{{item.BILLDETAIL_W||0}}*{{item.BILLDETAIL_H||0}}</view> <view class="daily-conright">数量：{{item.BILLDETAIL_TOTALQTY||0}}</view>
+											</view>
+										</view>
+									</view>
+									<view class="daily-head">
+										<!-- <view class="daily-time w-text-over">后期工艺: 工艺一工艺二</view> -->
+										<view class="daily-contacts w-text-over warning">明细总价: {{item.BILL_LEFTMONEY|priceFormat(2,'￥',true)}}</view>
+									</view>
+								</view>
+							</view>
+						</view>
+					</scroll-view>
+				</view>
+				<view class="not-data" v-show="dailyList.length == 0">没有数据</view>
+			</swiper-item>
+		</swiper>
+	<view class="recfooter" :class="{'t-recfooter':(tabIndex == 2||pageSettlement == 3 || pageSettlement == 4)}">
+		<view class="pricebtn">
+			<view class="left1">
+				<view v-show="chooseAllIsShow">
+					<label @tap='choose()'>
+						<checkbox :checked="chooseAll"></checkbox>
+					</label>
+					<text>全选</text>
+				</view>
+				<view class="pay-cont"><text>数量: {{num}}</text><text>总金额: <text class='warning'>{{sales|priceFormat(2,'￥',true)}}</text></text></view>
+			</view>
+			<view class="right1">
+				<text class="right w-btn-danger" @tap="pay()">付 款</text>
+			</view>
+		</view>
+	</view>
+	</view>
+</template>
+
+<script>
+	import judge from '@/common/js/loginPublic.js'
+	import md5 from '@/common/js/md5.js';
+	export default {
+		components: {
+		},
+		props: {
+			scrollHeight: {
+				type: [Number,String],
+				default:function(){
+					return 0
+				}
+			},
+			orderQuerry: {//从订单页面进入收款页面传入订单号和客户名
+				type: Object,
+				default: function(){
+					return {key: false}
+				}
+			},
+			maskTop: { //收款页面弹窗弹出高度
+				type: String,
+				default: function(){
+					return ''
+				}
+			},
+			fparams: {
+				type: Object,
+				default: function(){
+					return {}
+				}
+			},
+		},
+		data() {
+			return {
+				tabBars:[//顶部滑动切换标题
+					{id: 0,name: '全部',isTrue: true},
+					{id: 1,name: '已结清',isTrue: false},
+					{id: 2,name: '未结清',isTrue: false},
+				],
+				dailyList:[],//页面订单显示数组
+				tabIndex: 0,//swiper下标
+				orderList:{allData: [],clear: [],notClear: []},//订单页面需要三个数组存储数据全部、未结清、已结清防止已有数据再次请求
+				newsList:[],//swiper分多少个页面页占位数组
+				pageLarge:{nowIndexA: 0,nowIndexB: 0,nowIndexC: 0},//现在处于页数
+				pageMaxSize:{pageA: -1,pageB: -1,pageC: -1},//最大页数
+				nowInfo:{nowIndex: 0,maxSize: -1},//传入接口页面参数
+				allCheck: false,//全选
+				orderNums: 0,//订单数
+				zMask: false,//查询时的遮罩层
+				prepay_id: '',
+				pageSettlement: 0,//0收款(数据不变) 1对账 2扫码
+				chooseAll: false,//全选
+				chooseAllIsShow: false,
+				temporaryData: {order_id: '',order_code: ""},//收款单临时数据
+				isPay: false,//是否完成支付
+			}
+		},
+		methods: {
+			choose(){ //全选
+				this.chooseAll = !this.chooseAll;
+				this.dailyList.forEach(i=>{
+					i.isTrue = this.chooseAll
+				})
+			},
+			displayMore(orderId){ //展开更多
+				this.dailyList.some((i,j)=>{
+					if(i.BILL_ID == orderId){
+						i.isShow = !i.isShow;
+						this.$set(this.dailyList,j,i);
+						return true;
+					}
+				})
+			},
+			async refresh(){
+				if(this.nowInfo.maxSize >= this.nowInfo.nowIndex || this.nowInfo.maxSize == -1){
+					this.addPageInfo();
+					let data = await this.wrquest(this.params);
+					this.setDisplayData(data);
+				}else{
+					uni.showToast({title:'到底了',icon: 'none'})
+					return
+				}
+			},
+			changeCheckStatu(id){
+				this.dailyList = this.dailyList.map(i=>{
+					if(i.BILL_CODE == id){
+						i.isTrue = !i.isTrue;
+					}
+					return i
+				})
+			},
+			setDisplayData(data){
+				let arr3 = this.contactDoubleArr(data);
+				this.dailyList = arr3;
+				switch (this.tabIndex){
+					case 0://全部
+						this.orderList.allData = arr3;
+						break;
+					case 1://未结清
+						this.orderList.clear = arr3;
+						break;
+					case 2:// 已结清
+						this.orderList.notClear = arr3;
+						break;
+					default:
+						break;
+				}
+			},
+			addPageInfo(){ // 当前页数+1
+				switch (this.tabIndex){
+					case 0://全部
+					this.nowInfo.nowIndex = this.pageLarge.nowIndexA = this.pageLarge.nowIndexA+1;
+					this.nowInfo.maxSize = this.pageMaxSize.pageA;
+						break;
+					case 1://未结清
+					this.nowInfo.nowIndex = this.pageLarge.nowIndexB = this.pageLarge.nowIndexB+1;
+					this.nowInfo.maxSize = this.pageMaxSize.pageB;
+						break;
+					case 2:// 已结清
+					this.nowInfo.nowIndex = this.pageLarge.nowIndexC = this.pageLarge.nowIndexC+1;
+					this.nowInfo.maxSize = this.pageMaxSize.pageC;
+						break;
+					default:
+						break;
+				}
+			},
+			setPageInfo(){ //赋值切换当前页数和最大页数
+				switch (this.tabIndex){
+					case 0://全部
+					this.nowInfo.nowIndex = this.pageLarge.nowIndexA;
+					this.nowInfo.maxSize = this.pageMaxSize.pageA;
+						break;
+					case 1://未结清
+					this.nowInfo.nowIndex = this.pageLarge.nowIndexB;
+					this.nowInfo.maxSize = this.pageMaxSize.pageB;
+						break;
+					case 2:// 已结清
+					this.nowInfo.nowIndex = this.pageLarge.nowIndexC;
+					this.nowInfo.maxSize = this.pageMaxSize.pageC;
+						break;
+					default:
+						break;
+				}
+			},
+			setMaxPage(max){//设置最大页
+				switch (this.tabIndex){
+					case 0://全部
+					this.nowInfo.maxSize = this.pageMaxSize.pageA = parseInt((max / 8));
+						break;
+					case 1://未结清
+					this.nowInfo.maxSize = this.pageMaxSize.pageB = parseInt((max / 8));
+						break;
+					case 2:// 已结清
+					this.nowInfo.maxSize = this.pageMaxSize.pageC = parseInt((max / 8));
+						break;
+					default:
+						break;
+				}
+			},
+			someInit(){//初始化条件与数据
+				this.pageLarge = {nowIndexA: 0,nowIndexB: 0,nowIndexC: 0};//现在处于页数
+				this.pageMaxSize = {pageA: -1,pageB: -1,pageC: -1};//最大页数
+				this.nowInfo = {nowIndex: 0,maxSize: 0};//传入接口页面参数
+				if(this.pageSettlement == 0)this.params.Status = '2'//收款页面只展示未结清单子
+				for(let key in this.params){ //遍历重置筛选条件
+					this.params[key] = this.fparams[key]
+				}
+				this.changeType(0);//重置swiper位置
+				this.tabIndex = 0;//重置swiper位置
+				this.dailyList = [];
+				this.orderList.allData = this.orderList.clear = this.orderList.notClear = [];//重置各个数组
+			},
+			changeType(id){ //更换订单类别
+				if(this.tabIndex == 2){
+					this.$emit('changeScrollHeight',{type:true,height:70});
+				}else{
+					this.$emit('changeScrollHeight',{type:false,height:70});
+					this.chooseAll = false;//全选按钮恢复默认
+				}
+				this.tabBars.forEach(i=>{
+					i.isTrue = false
+					if(i.id == id){
+						i.isTrue = true;
+					}
+				})
+			},
+			ontabtap(e) {//点击切换类别
+				let index = parseInt(e.target.dataset.current || e.currentTarget.dataset.current);
+				this.tabIndex = index;
+			},
+			ontabchange(e) {//滑动切换类别
+				let index = parseInt(e.target.current || e.detail.current);
+				this.tabIndex = index;
+				this.params.Status = index;
+				this.setPageInfo();
+				this.changeType(index);
+				this.setOrderList(index,this.params);
+			},
+			changeScreen(data){//改变筛选条件 父组件调用
+				let data1 = data.data1;
+				let data2 = data.data2;
+				this.someInit();
+				if(data1.length != 0)this.packageData1(data1)
+				if(data2.length != 0)this.packageData2(data2)
+				this.queryData()
+			},
+			packageData1(data){ //顶部筛选数据
+				data.forEach(i=>{
+					if(i.id == 102){
+						this.params.BEGINDATE = i.times.statrTime;
+						let addOne = i.times.endTime;
+						let arr = [];
+						arr = addOne.split('-');
+						arr[2] = parseInt(arr[2]) + 1;
+						this.params.ENDDATE = arr.join('-');
+					}
+				})
+			},
+			wrquest(params = this.params){//接口调用
+				//this.params.PAGE_INDEX = this.nowInfo.nowIndex;
+				uni.showLoading({title: '加载中...'})
+				return new Promise((resolv,reject)=>{
+					uni.request({
+						//url: this.url + '/public/query',
+						//url: 'http://192.168.199.145:7798' + '/public/query',
+						url: this.transitUrl + '/transit_server',
+						//method: 'GET',
+						method: 'POST',
+						data:{
+							interface_add: 'http://' + this.url + ':' + this.port + '/public/query',
+							token: this.token,
+							//params: params,
+							params: JSON.stringify(params),
+						},
+						success:res=>{
+							if(res.data.status == 0){
+								this.setMaxPage(res.data.total)
+								resolv(res.data.data)
+							}else{
+								reject(uni.showToast({title: '异常',icon: 'none'}))
+							}
+						},
+						fail:(res)=> {
+							uni.showToast({title: '网络异常',icon: 'none'})
+						},
+						complete:(res)=> {
+							uni.hideLoading()
+						}
+					})
+				})
+			},
+			async queryData(params = this.params){ //查询数据
+				let data = await this.wrquest(params);
+				this.dailyList = this.createDoubleArr(data);
+				this.orderList.allData = this.dailyList;
+				this.appendCheckBox();
+				console.log(this.dailyList,6666)
+			},
+			contactDoubleArr(arr){//已有分组的情况下 下拉刷新出来的新数据处理
+				let arr1 = this.createDoubleArr(arr); //新增的二维数组
+				let num1 = 0,num2 = 0,num3 = 0;
+				arr1.forEach(i=>{
+					num1+= i.child.length
+				})
+				let arr2 = this.dailyList;//原来的二维数组
+				arr2.forEach(i=>{
+					num2+= i.child.length
+				})
+				arr1.forEach((i,j)=>{
+					let flag = arr2.some((k,l)=>{
+						if(i.BILL_ID == k.BILL_ID){//新增数据在原有数组中存在
+							k.child = k.child.concat(i.child);
+							return true;
+						}
+					})
+					if(!flag){
+						arr2.push(i);
+					}
+				})
+				arr2.forEach(i=>{
+					num3+= i.child.length
+				})
+				return arr2;
+			},
+			createDoubleArr(arr){
+				let arr1 = []
+				arr.filter(i=>{
+					let obj = {};
+					obj['BILL_CODE'] = i.BILL_CODE;
+					obj['BILL_DATE_STR'] = i.BILL_DATE_STR;
+					obj['BILL_ID'] = i.BILL_ID;
+					obj['BILL_LEFTMONEY'] = i.BILL_LEFTMONEY;
+					obj['child'] = [];
+					arr1.push(obj);
+				})
+				arr1 = arr1.filter((i,j,self)=>{
+					return self.findIndex(el=>el.BILL_CODE == i.BILL_CODE)===j
+				})
+				arr1.forEach((i,j)=>{
+					arr.forEach((k,l)=>{
+						let flag = false;
+						let obj = {};
+						if(i.BILL_ID == k.BILL_ID){
+							flag = true;
+							obj['BILLDETAIL_GOODSNAME'] = k.BILLDETAIL_GOODSNAME;
+							obj['BILL_LEFTMONEY'] = k.BILL_LEFTMONEY;
+							obj['BILLDETAIL_W'] = k.BILLDETAIL_W;
+							obj['BILLDETAIL_PRICE'] = k.BILLDETAIL_PRICE;
+							obj['BILLDETAIL_H'] = k.BILLDETAIL_H;
+							obj['BILLDETAIL_TOTALQTY'] = k.BILLDETAIL_TOTALQTY;
+						}
+						if(flag)i.child.push(obj)
+					})
+				})
+				return arr1;
+			},
+			returnAppendCheckBox(arr){ //分页的时候添加可控属性
+				arr.forEach((i,j)=>{
+					i.isTrue = false;
+					i.isShow = false;
+				})
+				return arr;
+			},
+			appendCheckBox(){//添加可控筛选属性
+				if(this.dailyList.length == 0)return
+				this.dailyList.forEach((i,j)=>{
+					this.$set(this.dailyList[j],'isTrue',false);
+					this.$set(this.dailyList[j],'isShow',false);
+				})
+			},
+			pullRefresh(){
+				this.params.PAGE_INDEX = 0;
+				this.queryData();
+			},
+			jqueyForCustomer(){
+				this.pageSettlement = 1;
+				[1,2,3].forEach(i => {
+					this.newsList.push(i);
+				});
+				this.chooseAllIsShow = true
+				this.nowInfo.nowIndex = 0
+				this.queryData();
+			},
+			// 付款逻辑开始
+			package(){//组装数据
+				let data = [];
+				this.dailyList.forEach(i=>{
+					if(i.isTrue){
+						i.child.some((k,j)=>{
+							let obj = {};
+							obj.id = 0;
+							obj.LpTotal = k.BILL_LEFTMONEY; //后期工艺价格
+							obj.total = k.BILL_LEFTMONEY;
+							obj.refbillid = i.BILL_ID;
+							data.push(obj);
+							if(true)return true
+						})
+					}
+				}) 
+				let params = {
+					MODE: 1,
+					order:{
+						id: 0,
+						type: 2,
+						Date:this.wpublic.getDay(0),
+						partnerid:1757112 ,//this.partnerid,//客户ID
+						paymenttypeid: 258,//支付方式
+						paymoney: this.sales,
+						total: this.sales,
+						remark: '微信小程序临时收款'
+					},
+					'OrderDetail': data
+				}
+				return params;
+			},
+			payStatus(){
+				let flag = false;
+				flag = this.dailyList.some(i=>{
+					if(i.isTrue)return true;
+				})
+				return flag
+			},
+			complete(params){//收成临时收款单
+				return new Promise((resolve,reject)=>{
+					uni.request({
+						url: this.transitUrl + '/transit_server',
+						//url: 'http://192.168.199.145:7798' + '/public/common',
+						//method: 'GET',
+						method: 'POST',
+						data:{
+							interface_add: 'http://' + this.url + ':' + this.port + '/public/common',
+							//token: '6DC6E3E243773B841717190112723222',
+							token: this.token,
+							params: JSON.stringify(params),
+							//params:params,
+						},
+						success:(res)=> {
+							let result = judge.loginJudge(res.data.status);
+							if (result == false) {
+								return false;
+							}
+							if(res.data.status == 0){
+								resolve(res.data);
+							}else{
+								reject(uni.showToast({title:'订单修改失败'+res.data.message,icon:'none'}))
+							}
+						},
+						fail:(res)=> {
+							reject(uni.showToast({title: '网络繁忙,稍后重试'+res.message,icon:'none'}))
+							
+						},
+					})
+				}) 
+			},
+			async pay(){ //发起支付
+				if(!this.payStatus()){
+					uni.showToast({title: "请选择单子",icon: 'none'})
+					return
+				}
+				if(this.partnerid!=''){
+					let params = this.package();
+					let data = await this.complete(params).catch(()=>{return 'wrong'});
+					if(data!='wrong'){
+						if(data.status == 0){
+							this.temporaryData.order_id = data.order_id;
+							this.temporaryData.order_code = data.order_code_long;//data.order_code.replace(/-/g,'');
+							this.taskPay(this.temporaryData.order_code);
+						}else{
+							uni.showToast({title: data.message,icon: 'none'})
+						}
+					}else{
+						uni.showToast({title: '异常',icon:'none'})
+					}
+				}else{
+					uni.showToast({title: '客户ID获取异常',icon:'none'})
+				}
+			},
+			deleteOrder(params){ //删除订单 登账
+				uni.showLoading({title: '加载中...'})
+				uni.request({
+					//url: this.url + '/public/common',
+					url: this.transitUrl + '/transit_server',
+					method: 'POST',
+					//method: 'GET',
+					data:{
+						interface_add: 'http://' + this.url + ':' + this.port + '/public/common',
+						token: this.token,
+						params: JSON.stringify(params),
+					},
+					success:res=>{
+						let result = judge.loginJudge(res.data.status);
+						if (result == false) {
+							uni.showToast({title: '验证码过期请重新登录',icon: 'none'})
+							return false;
+						}
+						if(res.data.status == 0 && res.data.FailureCount == 0){//登账接口返回成功
+							if(params.type == 1){
+								uni.showToast({title: '登账成功',icon: 'success'});
+								setTimeout(()=>{
+									this.pullRefresh()
+								},500)
+							}else if(params.type == -1){
+								if(this.isPay){
+									this.isPay = false;
+									this.taskBackMoney(this.temporaryData.order_code);
+								}
+								uni.showToast({title: '删除临时账单成功',icon: 'success'})
+							}
+						}else{
+							if(this.isPay){
+								this.isPay = false;
+								this.taskBackMoney(this.temporaryData.order_code);
+							}
+							try{
+								uni.showToast({
+									title: res.data.FailureIdList[0].ERROR
+								})
+							}catch(e){
+								//TODO handle the exception
+							}
+						}
+					},
+					fail:()=> {
+						if(this.isPay){
+							this.isPay = false;
+							this.taskBackMoney(this.temporaryData.order_code);
+						}
+					},
+					complete:()=> {
+						uni.hideLoading()
+					}
+				})
+			},
+			beforeWXpay(url,payOrderId){
+				uni.showLoading({title: '发起支付中...'});
+				return new Promise((resolve,reject)=>{
+					wx.login({
+						success: res => {
+							var code = res.code;
+							//nonceStr->code MD5 
+							uni.request({
+								url: url + '/unifiedorder',
+								method: 'POST',
+								data:{total_fee: '0.01',code: code,out_trade_no: payOrderId},
+								success: (res) => {
+									resolve(res)
+								},
+								fail:(erro)=> {
+									uni.showToast({title: '请求失败'+'错误码201',icon:"none"});
+									reject();
+								}
+							})
+						}
+					})
+				})
+			},
+			async taskPay(payOrderId){ //调用微信前运行
+				let data = await this.beforeWXpay('https://proxy.fydlsoft.com',payOrderId).catch(()=>{return {state: 500}});
+				if(data.statusCode == 200){ //服务器正常连接
+					if(data.data.status == 200){
+						this.WXpay(data.data);
+					}else{
+						this.taskPayWrong(data)
+					}
+				}else if(data.statusCode == 404){
+					uni.showToast({title: '启用备用域名',icon: 'none'})
+					let data1 = await this.beforeWXpay('https://cloud1.fydlsoft.com',payOrderId).catch(()=>{return {state: 500}});
+					if(data1.statusCode == 200){
+						if(data1.data.status == 200){
+							this.WXpay(data1.data);
+						}else{
+							this.taskPayWrong(data1)
+						}
+					}else{
+						this.taskPayWrong(data1)
+					}
+				}else{
+					this.taskPayWrong(data)
+				}
+			},
+			taskPayWrong(data){// 调用微信支付前的接口报错
+				let params = {
+					Mode:2,
+					type: -1,
+					idlist:[this.temporaryData.order_id]
+				}
+				uni.showToast({title: data.data.RETURN_MSG,icon: 'none'})
+				setTimeout(()=>{
+					this.deleteOrder(params);
+				},1000)
+			},
+			async taskBackMoney(payOrderId){
+				let data = await this.backMoney('https://proxy.fydlsoft.com',payOrderId).catch(()=>{return {state: 500}});
+				if(data.statusCode == 200){
+					if(data.data.status == 200){
+						uni.showToast({title: "退款成功",icon: 'success'})
+					}else{
+						uni.showToast({title: "自动退款失败请联系管理员",icon: 'success'})
+					}
+				}else if(data.statusCode == 404){
+					uni.showToast({title: '启用备用域名',icon: 'none'})
+					let data1 = await this.backMoney('https://cloud1.fydlsoft.com',payOrderId).catch(()=>{return {state: 500}});
+					if(data1.statusCode == 200){
+						if(data.data.status == 200){
+							uni.showToast({title: "退款成功",icon: 'success'})
+						}else{
+							uni.showToast({title: "自动退款失败请联系管理员",icon: 'success'})
+						}
+					}else{
+						uni.showToast({title: "自动退款失败请联系管理员",icon: 'success'})
+					}
+				}else{
+					uni.showToast({title: "自动退款失败请联系管理员",icon: 'success'})
+				}
+			},
+			backMoney(url,payOrderId){
+				uni.showLoading({title: '退款中...'});
+				return new Promise((resolve,reject)=>{
+					wx.login({
+						success: res => {
+							var code = res.code;
+							//nonceStr->code MD5 
+							uni.request({
+								url: url + '/refund',
+								method: 'POST',
+								data:{total_fee: '0.01',code: code,out_trade_no: payOrderId},
+								success: (res) => {
+									resolve(res);
+								},
+								fail:(erro)=> {
+									reject();
+								},
+								complete: () => {
+									uni.hideLoading();
+								}
+							})
+						}
+					})
+				})
+			},
+			WXpay(data){ //调用微信支付
+				uni.requestPayment({
+					provider: 'wxpay',
+					timeStamp: data.timeStamp,
+					nonceStr: data.nonceStr,
+					package: data.package,
+					signType: data.signType,
+					paySign: data.paySign,
+					success: (res)=>{
+						uni.showLoading({
+							title:'支付结果查询中...',
+						})
+						if (res.errMsg == 'requestPayment:ok'){
+							uni.showToast({title: '支付成功',icon: 'success'});
+							this.isPay = true;
+							let params = {
+								Mode:2,
+								type: 1,
+								idlist: [this.temporaryData.order_id]
+							}
+							this.deleteOrder(params);//登账
+						}else{
+							let params = {
+								Mode:2,
+								type: -1,
+								idlist:[this.temporaryData.order_id]
+							}
+							this.deleteOrder(params);
+						}
+					},
+					fail: (err)=> {
+						uni.showToast({title: '支付已取消',icon: 'none'});
+						let params = {
+							Mode:2,
+							type: -1,
+							idlist:[this.temporaryData.order_id]
+						}
+						this.deleteOrder(params)
+					},
+					complete: () => {
+						uni.hideLoading();
+					}
+				})
+			},
+			async setOrderList(type = -1,params){//设置类别数据
+				switch (type){
+					case -1:
+						let data = await this.wrquest(params);
+						this.orderList.allData = this.createDoubleArr(data);
+						this.dailyList = this.orderList.allData;
+						break;
+					case 0:
+					if(this.orderList.allData.length == 0){
+						let data = await this.wrquest(params);
+						this.orderList.allData = this.createDoubleArr(data);
+						this.dailyList = this.orderList.allData;
+					}else{
+						this.dailyList = this.orderList.allData;
+					}
+						break;
+					case 1:
+					if(this.orderList.clear.length == 0){
+						let data = await this.wrquest(params);
+						this.orderList.clear = this.createDoubleArr(data);
+						this.dailyList = this.orderList.clear;
+					}else{
+						this.dailyList = this.orderList.clear;
+					}
+						break;
+						case 2:
+					if(this.orderList.notClear.length == 0){
+						let data = await this.wrquest(params);
+						this.orderList.notClear = this.createDoubleArr(data);
+						this.dailyList = this.orderList.notClear;
+					}else{
+						this.dailyList = this.orderList.notClear;
+					}
+						break;
+					default:
+						break;
+				}
+				this.appendCheckBox();
+			},
+		},
+		created() {
+			//this.taskBackMoney("181715662275383296");
+		},
+		computed:{
+			transitUrl: {
+				set: function(){
+					return 0
+				},
+				get: function(){
+					return this.$store.state.transitUrl;
+				}
+			},
+			url:{
+				get: function(){
+					return this.$store.state.loginParams.url
+				},
+				set: function(){
+					return ''
+				}
+			},
+			port: {
+				get: function(){
+					return this.$store.state.loginParams.port
+				},
+				set: function(){
+					return 7798
+				}
+			},
+			dbname: {
+				get: function(){
+					return this.$store.state.loginParams.dbname
+				},
+				set: function(){
+					return ''
+				}
+			},
+			token: {
+				get: function(){
+					return this.$store.state.token
+				},
+				set: function(){
+					return ''
+				}
+			},
+			params:{ //筛选条件初始化由父页面传值
+				set:function(){
+					return {}
+				},
+				get: function(){
+					let obj = this.wpublic.deepClone(this.fparams);
+					return obj
+				}
+			},
+			num: {
+				set:function(){
+					return 0
+				},
+				get:function(){
+					if(this.pageSettlement == 0){
+						return this.dailyList.length;
+					}else{
+						let num = 0;
+						this.dailyList.forEach(i=>{
+							if(i.isTrue)num++
+						})
+						return num
+					}
+					
+				}
+			},
+			partnerid:{
+				set:function(){
+					return 0
+				},
+				get:function(){
+					return this.$store.state.loginParams.personId
+				}
+			},
+			sales: {
+				set: function(){
+					return 0
+				},
+				get: function(){
+					let nums = 0;
+					this.dailyList.forEach(i=>{
+						if(this.pageSettlement == 0){
+							nums += Math.abs(parseFloat(i.BILL_LEFTMONEY));
+						}else{
+							if(i.isTrue){
+								nums += Math.abs(parseFloat(i.BILL_LEFTMONEY));
+							}
+						}
+					})
+					return nums;
+				}
+			},
+		},
+	}
+</script>
+
+<style lang="scss" scoped>
+	@import "../../common/css/iconfont.css";
+	@import "../../common/css/order.scss";
+	.con-conent{
+		.recfooter{
+			height: 0;
+			transition: all .3s ease-in;
+			transform: translateY(70px);
+			.pricebtn{
+				display: flex;
+				justify-content: space-between;
+				.left1{
+					display: flex;
+					.pay-cont{
+						display: flex;
+						flex-direction: column;
+						padding-left: 40rpx;
+					}
+				}
+			
+			}
+		}
+		.t-recfooter{
+			height: 120rpx;
+			transform: translateY(0);
+		}
+	}
+</style>
